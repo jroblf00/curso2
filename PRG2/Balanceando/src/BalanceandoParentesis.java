@@ -51,7 +51,7 @@ public class BalanceandoParentesis {
 		
 	}
 	
-	public static boolean ComprobarPorAbajo(String frase, int posAbajo) {
+	public static void ComprobarPorAbajo(String frase, int posAbajo) {
 		
 		if(posAbajo >= 0){
 		
@@ -77,8 +77,6 @@ public class BalanceandoParentesis {
 			ComprobarPorArriba(frase, posAbajo, ++posAbajo);
 			
 		}
-
-		return balanceado;
 		
 	}
 	
