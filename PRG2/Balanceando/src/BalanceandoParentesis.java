@@ -16,18 +16,7 @@ public class BalanceandoParentesis {
 		
 			Almacenar(rd, buffer);
 			ComprobarPorAbajo(buffer.toString(), ComprobarPosicion(buffer.toString()));
-			
-			if(balanceado) {
-				
-				System.out.println("Esta balanceado");
-				
-			}
-			
-			else {
-				
-				System.out.println("No esta balanceado");
-				
-			}
+			System.out.println(ImprimirSolucion());
 			
 		
 		} catch(IOException e) {
@@ -174,5 +163,24 @@ public class BalanceandoParentesis {
 		
 	}
 	
+	public static String ImprimirSolucion(){
+		
+		String fraseFinal;
+		
+		if(balanceado) {
+			
+			fraseFinal = "Delimitadores balanceados.";
+			
+		}
+		
+		else {
+			
+			fraseFinal = "Delimitadores sin balancear.";
+			
+		}
+		
+		return fraseFinal;
+		
+	}
+	
 }
-
