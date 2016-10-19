@@ -1,5 +1,12 @@
 import java.io.*;
 
+
+/**
+ *
+ * @author Juan Carlos Robles Fernandez
+ *
+ */
+
 public class BalanceandoParentesis {
 
 	
@@ -27,6 +34,14 @@ public class BalanceandoParentesis {
 	}
 
 	
+	/**
+	 * 
+	 * @param objeto reader y un buffer donde se almacenara la frase introducida por el teclado
+	 *
+	 * Almacena en un StringBuffer el teclado hasta que se introduce el caracter '$'
+	 *
+	 */
+
 	public static void Almacenar(Reader rd, StringBuffer frase) throws IOException{
 		
 		int ch = rd.read();	
@@ -39,6 +54,15 @@ public class BalanceandoParentesis {
 		}
 		
 	}
+
+	/**
+	 * 
+	 * @param frase frase introducida por teclado
+	 * @param posAbajo posicion del ultimo delimitador abierto
+	 *
+	 * busca el ultimo delimitador abierto y si lo encuentra llama a ComprobarPorAbrriba
+	 *
+	 */
 	
 	public static void ComprobarPorAbajo(String frase, int posAbajo) {
 		
@@ -69,6 +93,17 @@ public class BalanceandoParentesis {
 		
 	}
 	
+	/**
+	 * 
+	 * @param frase frase untroducida por el teclado
+	 * @param posAbajo posicion en al que esta el delimitador abierto
+	 * @param posArriba posicion de busqueda del delimitador que cierra
+	 *
+	 * busca donde se cierra el delimitador que esta abierto y si encuentra el delimitador
+	 * que cierra o que cierra otro tipo de delimitador que no esta abierto, acaba
+	 *
+	 */
+
 	public static void ComprobarPorArriba(String frase, int posAbajo, int posArriba) {
 		
 		StringBuffer fraseCopia = new StringBuffer(frase);
@@ -137,6 +172,15 @@ public class BalanceandoParentesis {
 	
 	}
 
+	/**
+	 * 
+	 * @param frase frase introducida por teclado
+	 * @return posicion del ultimo delimitador abierto
+	 *
+	 * comprueba cual es el ultimo delimitador abierto
+	 * 
+	 */
+
 	public static int ComprobarPosicion(String frase) {
 		
 		int posicion = 0;
@@ -162,6 +206,12 @@ public class BalanceandoParentesis {
 		return posicion;
 		
 	}
+
+	/**
+	 * 
+	 * @return string con la solucion final
+	 * 
+	 */
 	
 	public static String ImprimirSolucion(){
 		
