@@ -84,13 +84,7 @@ public class Palindromos {
 		
 		StringBuffer copia = new StringBuffer(frase);
 		String reverse = copia.reverse().toString();
-		
-		if(frase.equals(reverse)){
-			
-			System.out.println(frase);
-			
-		}
-		
+
 		return frase.equals(reverse);
 		
 	}
