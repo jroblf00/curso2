@@ -6,7 +6,7 @@ public class Palindromos {
 	/**
 	 * fraseCopia se utiliza como auxiliar del string ingresador por teclado
 	 */
-	static StringBuffer fraseCopia = new StringBuffer();
+	static StringBuffer fraseAux = new StringBuffer();
 	
 	/**
 	 * contadorPalindromos cuenta los palindromos encontrados
@@ -17,14 +17,19 @@ public class Palindromos {
 	
 	public static void main (String[] args) throws IOException {
 		
-		StringBuffer buffer = new StringBuffer();
+		StringBuffer fraseTeclado = new StringBuffer();
 		InputStreamReader rd = new InputStreamReader(System.in);
 		
-		LeerTeclado(rd, buffer);		
+		LeerTeclado(rd, fraseTeclado);
+		
+		fraseAux.insert(0, fraseTeclado.toString().toLowerCase());
+		fraseTeclado.delete(0, fraseTeclado.length());
+		fraseTeclado.insert(0, fraseAux);
+		
 		/**
 		 * si no se ingresa nada por teclado se muestra "La cadena es nula"
 		 */
-		if(buffer.toString().equals("")) {
+		if(fraseTeclado.toString().equals("")) {
 			
 			System.out.println("La cadena es nula.");
 			
@@ -33,32 +38,48 @@ public class Palindromos {
 		else {
 			
 			/**
-			 * se llama a la funcion buscar. 
+			 * Comprueba si la palabra en si es palindroma.
+			 * En caso contrario se llama a la funcion buscar. 
 			 * Se calculan todos los palindromos.
 			 * Se llama a la funcion buscar con la cadena revertida.
 			 * Se calculan todos los palindromos hayados.
 			 * Mostramos por pantalla la cadena introducida por teclado y la cantidad minima de palindomos encontrados.
 			 */
 			
-			fraseCopia.insert(0, buffer);			
-			Buscar(0,1);
-			contadorPalindromos = contadorPalindromos + fraseCopia.length();
-			contadorPalindromosAuxiliar = contadorPalindromos;
-			contadorPalindromos = 0;
-			
-			fraseCopia.delete(0, fraseCopia.length());
-			fraseCopia.insert(0, buffer.reverse());
-			Buscar(0,1);
-			contadorPalindromos = contadorPalindromos + fraseCopia.length();
-			buffer.reverse();
-			
-			if(contadorPalindromosAuxiliar < contadorPalindromos){
+			if(Comprobar(fraseTeclado.toString())) {
 				
-				contadorPalindromos = contadorPalindromosAuxiliar;
+				contadorPalindromos = 1;
 				
 			}
 			
-			System.out.println("La palabra " + buffer.toString() +
+			else {
+			
+				fraseAux.delete(0, fraseAux.length());
+				fraseAux.insert(0, fraseTeclado);			
+				
+				Buscar(0,1);
+				
+				contadorPalindromos = contadorPalindromos + fraseAux.length();
+				contadorPalindromosAuxiliar = contadorPalindromos;
+				contadorPalindromos = 0;
+				
+				fraseAux.delete(0, fraseAux.length());
+				fraseAux.insert(0, fraseTeclado.reverse());
+				
+				Buscar(0,1);
+				
+				contadorPalindromos = contadorPalindromos + fraseAux.length();
+				fraseTeclado.reverse();
+			
+				if(contadorPalindromosAuxiliar < contadorPalindromos){
+					
+					contadorPalindromos = contadorPalindromosAuxiliar;
+					
+				}
+			
+			}
+			
+			System.out.println("La palabra " + fraseTeclado.toString() +
 					" se descompone en " + contadorPalindromos + " palindromos.");
 			
 		}
@@ -85,12 +106,11 @@ public class Palindromos {
 			if((ch > 64 && ch < 91) || (ch > 96 && ch < 123)){
 				
 				teclado.append(ch);
-				LeerTeclado(rd, teclado);
 			
 			}
+			
+			LeerTeclado(rd, teclado);
 		}
-		
-		teclado.toString().toLowerCase();
 		
 	}	
 	
@@ -102,16 +122,16 @@ public class Palindromos {
 	
 	public static void Buscar(int posAbajo, int posArriba) {	
 
-		if(posArriba >= fraseCopia.length()){
+		if(posArriba >= fraseAux.length()){
 
 			++posAbajo;
 			posArriba = posAbajo+1;
 			
 		}
 		
-		if(posAbajo < fraseCopia.length() && posArriba < fraseCopia.length()){
+		if(posAbajo < fraseAux.length() && posArriba < fraseAux.length()){
 			
-			if(fraseCopia.charAt(posAbajo) != fraseCopia.charAt(posArriba)){
+			if(fraseAux.charAt(posAbajo) != fraseAux.charAt(posArriba)){
 				
 				Buscar(posAbajo, ++posArriba);
 				
@@ -119,9 +139,9 @@ public class Palindromos {
 			
 			else {
 				
-				if(Comprobar(fraseCopia.substring(posAbajo, ++posArriba))){
+				if(Comprobar(fraseAux.substring(posAbajo, ++posArriba))){
 					
-					fraseCopia.delete(posAbajo, posArriba);
+					fraseAux.delete(posAbajo, posArriba);
 					contadorPalindromos += 1;
 					
 				}
