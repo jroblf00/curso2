@@ -1,23 +1,68 @@
 class Cajetin {
 	
-	public static boolean lleno;
+	boolean ocupado;
+	int mensaje;
+	char departamentoDestino;
+	char departamentoOrigen;
 	
 	public Cajetin () {
 		
-		lleno = false;
+		this.ocupado = false;
 		
 	}
 	
-	public boolean estalleno () {
+	public void setEstado (boolean estado) {
 		
-		return lleno;
+		this.ocupado = estado;
 		
 	}
 	
-	public void cabiarEstado (boolean estadoCajetin) {
+	public boolean getEstado () {
 		
-		this.lleno = estadoCajetin;
+		return this.ocupado;
 		
-	}	
+	}
+	
+	public void setDestino ( char destino) {
+		
+		this.departamentoDestino = destino;
+		
+	}
+	
+	public char getDestino () {
+		
+		return this.departamentoDestino;
+		
+	}
+	
+	public void setOrigen (char origen) {
+		
+		this.departamentoOrigen = origen;
+		
+	}
+	
+	public char getOrigen () {
+		
+		return this.departamentoOrigen;
+		
+	}
+	
+	public void setMensaje (int mensaje) {
+		
+		this.mensaje = mensaje;
+		
+	}
+	
+	public int getMensaje () {
+		
+		return this.mensaje;
+		
+	}
+	
+	public void setDefault () {
+		
+		this.ocupado = false;
+		
+	}
 	
 }
