@@ -10,7 +10,16 @@ class Cartero extends Thread {
 	char destino;
 	int posDep;
 	int cantidadCartasRecogidas;
-
+	
+	
+	/**
+	 * Constructor
+	 * 
+	 * se asignan los departamentos y numero de cartero
+	 * 
+	 * @param numeroCartero
+	 * @param departamento
+	 */
 	public Cartero(int numeroCartero, Departamento[] departamento) {
 
 		this.departamentos = departamento;
@@ -19,7 +28,17 @@ class Cartero extends Thread {
 		System.out.println("El cartero " + numeroCartero + " se ha creado.");
 
 	}
-
+	
+	/**
+	 * Comprueba si hay alguna carta disponible.
+	 * En caso de que haya manda una notificacion para recoger la carta y los datos
+	 * de remitente y destinatario.
+	 * Coloca la carta en un cajetin vacio del destinatario, en caso de que este el cajetin
+	 * lleno, espera hasta que este vacio.
+	 * 
+	 * Comprueba si hay ordenes de recoger las cartas del cajetin.
+	 * Si hay recoge todas las cartas y se las cede a su departamento.
+	 */
 	public void run() {
 
 		try {
@@ -28,7 +47,7 @@ class Cartero extends Thread {
 				
 				synchronized (departamentos) {
 
-					System.out.println("El cartero " + numeroCartero + " está descansando.");
+					System.out.println("El cartero " + numeroCartero + " estï¿½ descansando.");
 					
 					this.posDep = comprobarEnvio();
 					if (this.posDep != -1) { 
@@ -49,9 +68,9 @@ class Cartero extends Thread {
 						this.departamentos[this.destino-'A'].cajetines.insetarCarta(this.remitente, 
 								this.destino, this.mensaje);
 						System.out.println("El cartero " + numeroCartero + " deposita el mensaje /Mensaje " + this.mensaje
-								+ " de " + this.remitente + " a " + this.destino + "/ en el cajetín.");
+								+ " de " + this.remitente + " a " + this.destino + "/ en el cajetï¿½n.");
 						
-						System.out.println("El cartero " + numeroCartero + " está descansando.");
+						System.out.println("El cartero " + numeroCartero + " estï¿½ descansando.");
 					}
 					
 					this.posDep = comprobarRecogerCarta();
@@ -62,7 +81,7 @@ class Cartero extends Thread {
 						this.cartasRecogidas = this.departamentos[this.posDep].cajetines.recogerCarta();
 						this.departamentos[this.posDep].cajetines.eliminarCartas();
 						
-						System.out.println("El cartero " + this.numeroCartero + " recoge los mensajes del cajetín del departamento "
+						System.out.println("El cartero " + this.numeroCartero + " recoge los mensajes del cajetï¿½n del departamento "
 								 + (char)(this.posDep+'A') +".");
 						
 						for (int i=0; i<this.cantidadCartasRecogidas; i++) {
@@ -86,6 +105,12 @@ class Cartero extends Thread {
 		
 	}
 
+	/**
+	 * Comprueba si un departamento desea enviar una carta.
+	 * 
+	 * @return el departamento que desea enviar la carta
+	 * @throws InterruptedException
+	 */
 	public synchronized int comprobarEnvio() throws InterruptedException {
 
 		int pos = 0;
@@ -106,6 +131,12 @@ class Cartero extends Thread {
 		return pos;
 	}
 
+	/**
+	 * Comprueba si hay que recoger las cartas.
+	 * 
+	 * @return el departamento que desea recoger las cartas
+	 * @throws InterruptedException
+	 */
 	public synchronized int comprobarRecogerCarta() throws InterruptedException {
 
 		int pos = 0;

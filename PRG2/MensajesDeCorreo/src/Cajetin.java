@@ -4,13 +4,22 @@ class Cajetin {
 	int mensaje;
 	char departamentoDestino;
 	char departamentoOrigen;
-	
+
+	/**
+	 * Constructor
+	 * 
+	 * Por defecto no esta ocupado el cajetin.	
+	 */
 	public Cajetin () {
 		
 		this.ocupado = false;
 		
 	}
 	
+	/**
+	 * 
+	 * @param estado true si esta ocupado, false si no lo esta
+	 */
 	public void setEstado (boolean estado) {
 		
 		this.ocupado = estado;
@@ -23,6 +32,10 @@ class Cajetin {
 		
 	}
 	
+	 /**
+	  * 
+	  * @param destino el nombre del departamento destino
+	  */
 	public void setDestino ( char destino) {
 		
 		this.departamentoDestino = destino;
@@ -35,6 +48,10 @@ class Cajetin {
 		
 	}
 	
+	/**
+	 * 
+	 * @param origen el nombre del departamento origen
+	 */
 	public void setOrigen (char origen) {
 		
 		this.departamentoOrigen = origen;
@@ -47,6 +64,10 @@ class Cajetin {
 		
 	}
 	
+	/**
+	 * 
+	 * @param mensaje el mensaje que contiene el cajetin
+	 */
 	public void setMensaje (int mensaje) {
 		
 		this.mensaje = mensaje;
@@ -59,6 +80,9 @@ class Cajetin {
 		
 	}
 	
+	/**
+	 * Pone al cagetin por defecto, vacio.
+	 */
 	public void setDefault () {
 		
 		this.ocupado = false;

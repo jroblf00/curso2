@@ -18,6 +18,14 @@ class Departamento extends Thread {
 	private char departamentoAleatorio;
 	private Random randomNumber = new Random();
 	
+	/**
+	 * Constructor
+	 * 
+	 * Se asigna letra y cajetines al departamento.
+	 * 
+	 * @param letraDepartamento
+	 * @param tamCajetines
+	 */
 	public Departamento(char letraDepartamento, int tamCajetines) {
 		
 		this.letraDepartamento = letraDepartamento;
@@ -27,6 +35,10 @@ class Departamento extends Thread {
 
 	}
 
+	/**
+	 * Prepara una carta y se la pasa a cartero. 
+	 * Mientras no haya recibido la carta el cartero no podra preparar otra.
+	 */
 	public void run() {
 
 		try {
@@ -60,18 +72,28 @@ class Departamento extends Thread {
 
 	}
 	
+	/**
+	 * @return el numero de mensaje que se va a enviar
+	 */
+	
 	public int recogerCarta(){
 		 
 		return this.mensaje;
 		
 	}
 	
+	/**
+	 * @return la letra del departamento
+	 */
 	public char remitente() {
 		
 		return this.letraDepartamento;
 		
 	}
 	
+	/**
+	 * @param estado, true si hay una carta preparada, si no false
+	 */
 	public void setCartaEnviar (boolean estado) {
 		
 		this.cartaEnviar = estado;
@@ -84,6 +106,9 @@ class Departamento extends Thread {
 		
 	}
 	
+	/**
+	 * @param estado true si se ha recibido la carta, si no false
+	 */
 	public void setCartaRecibida (boolean estado) {
 		
 		this.cartaRecibida = estado;
@@ -96,18 +121,31 @@ class Departamento extends Thread {
 		
 	}
 	
+	/**
+	 * @return el departamento destino de la carta
+	 */
 	public char getDestino () {
 		
 		return this.departamentoAleatorio;
 		
 	}
 	
+	/**
+	 * @param estado, true si hay que recoger cartas, si no false
+	 */
 	public void setRecogerCartas (boolean estado) {
 		
 		this.recogerCartas = estado;
 		
 	}
 	
+	/**
+	 * Consulta a cajetines si poseen alguna carta.
+	 * Si posee carta indica que hay cartas para recoger.
+	 * 
+	 * @return recogerCartas
+	 * @throws InterruptedException
+	 */
 	public synchronized boolean getRecogerCartas () throws InterruptedException {
 		
 		Thread.sleep((long)Math.abs(distribucionExponencial.sample())*10);
@@ -128,6 +166,11 @@ class Departamento extends Thread {
 		
 	}
 	
+	/**
+	 * Se elige un departamento aleatoriamente y se prepara la carta.
+	 * 
+	 * @throws InterruptedException
+	 */
 	public synchronized void prepararCarta() throws InterruptedException {
 		
 		do{
@@ -143,6 +186,11 @@ class Departamento extends Thread {
 		
 	}
 	
+	/**
+	 * Se pone a la espera a que un cartero le notifique.
+	 * 
+	 * @throws InterruptedException
+	 */
 	public synchronized void pedirCartero () throws InterruptedException {
 		
 		this.cartaRecibida = false;
