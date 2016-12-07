@@ -3,6 +3,12 @@ import java.util.Random;
 import org.apache.commons.math3.distribution.ExponentialDistribution;
 import org.apache.commons.math3.distribution.NormalDistribution;
 
+/**
+ * 
+ * @author Juan Carlos Robles Fernandez
+ * 
+ */
+
 class Departamento extends Thread {
 
 	public static NormalDistribution distribucionNormal;

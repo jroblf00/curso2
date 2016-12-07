@@ -1,15 +1,21 @@
 import java.util.Random;
 
+/**
+ * 
+ * @author Juan Carlos Robles Fernandez
+ *
+ */
+
 class Cartero extends Thread {
 
-	Departamento[] departamentos;
-	Cajetin[] cartasRecogidas;
-	int numeroCartero;
-	int mensaje;
-	char remitente;
-	char destino;
-	int posDep;
-	int cantidadCartasRecogidas;
+	private Departamento[] departamentos;
+	private Cajetin[] cartasRecogidas;
+	private int numeroCartero;
+	private int mensaje;
+	private char remitente;
+	private char destino;
+	private int posDep;
+	private int cantidadCartasRecogidas;
 	
 	
 	/**
@@ -47,7 +53,7 @@ class Cartero extends Thread {
 				
 				synchronized (departamentos) {
 
-					System.out.println("El cartero " + numeroCartero + " est� descansando.");
+					System.out.println("El cartero " + numeroCartero + " está descansando.");
 					
 					this.posDep = comprobarEnvio();
 					if (this.posDep != -1) { 
@@ -68,9 +74,9 @@ class Cartero extends Thread {
 						this.departamentos[this.destino-'A'].cajetines.insetarCarta(this.remitente, 
 								this.destino, this.mensaje);
 						System.out.println("El cartero " + numeroCartero + " deposita el mensaje /Mensaje " + this.mensaje
-								+ " de " + this.remitente + " a " + this.destino + "/ en el cajet�n.");
+								+ " de " + this.remitente + " a " + this.destino + "/ en el cajetín.");
 						
-						System.out.println("El cartero " + numeroCartero + " est� descansando.");
+						System.out.println("El cartero " + numeroCartero + " está descansando.");
 					}
 					
 					this.posDep = comprobarRecogerCarta();
@@ -81,7 +87,7 @@ class Cartero extends Thread {
 						this.cartasRecogidas = this.departamentos[this.posDep].cajetines.recogerCarta();
 						this.departamentos[this.posDep].cajetines.eliminarCartas();
 						
-						System.out.println("El cartero " + this.numeroCartero + " recoge los mensajes del cajet�n del departamento "
+						System.out.println("El cartero " + this.numeroCartero + " recoge los mensajes del cajetín del departamento "
 								 + (char)(this.posDep+'A') +".");
 						
 						for (int i=0; i<this.cantidadCartasRecogidas; i++) {
@@ -114,14 +120,20 @@ class Cartero extends Thread {
 	public synchronized int comprobarEnvio() throws InterruptedException {
 
 		int pos = 0;
+		int numIntentosMaximo = 30;
+		int numIntentos = 0;
 
 		do {
 			
 			Random randomNumber = new Random();
 			randomNumber.setSeed(System.nanoTime());
 			pos  = randomNumber.nextInt(departamentos.length);
-
-			if (pos >= departamentos.length) {
+			numIntentos++;
+			
+			/**
+			 * Evita bucles infinitos.
+			 */
+			if (numIntentos >= numIntentosMaximo) {
 				pos = -1;
 				break;
 			}

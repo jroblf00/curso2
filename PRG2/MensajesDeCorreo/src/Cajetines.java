@@ -1,4 +1,10 @@
 
+/**
+ * 
+ * @author Juan Carlos Robles Fernandez
+ *
+ */
+
 public class Cajetines {
 
 	private Cajetin[] cajetines;

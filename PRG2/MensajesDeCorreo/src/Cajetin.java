@@ -1,9 +1,16 @@
+
+/**
+ * 
+ * @author Juan Carlos Robles Fernandez
+ *
+ */
+
 class Cajetin {
 	
-	boolean ocupado;
-	int mensaje;
-	char departamentoDestino;
-	char departamentoOrigen;
+	private boolean ocupado;
+	private int mensaje;
+	private char departamentoDestino;
+	private char departamentoOrigen;
 
 	/**
 	 * Constructor
