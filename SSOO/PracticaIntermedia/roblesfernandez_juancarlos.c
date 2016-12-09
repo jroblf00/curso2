@@ -2,10 +2,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/types.h>
+#include <errno.h>
 
 #define DEFAULT_STRING_LENGTH 256
-#define EXIT "exit\n"
+#define EXIT "exit\0"
 
+void init(char** command);
 void type_prompt();
 void read_command(char** command);
 void execute_command(char** command);
@@ -13,32 +16,45 @@ void execute_command(char** command);
 int main (int argc, char** argv) {
 
 	char** command;
+	int i = 0;
+	
+	do {	
+	
+		command = (char**)malloc(DEFAULT_STRING_LENGTH*sizeof(char*));
+		for (i=0; i<DEFAULT_STRING_LENGTH; i++) {
+
+			*(command+i) = (char*)malloc(DEFAULT_STRING_LENGTH*sizeof(char));
+
+		}
+		
+		type_prompt();
+		read_command(command);
+		
+		if (strcmp(command[0], EXIT) != 0) {
+			
+			execute_command(command);
+		
+		}	
+
+	} while (strcmp(command[0], EXIT) != 0);
+	
+	free(command);
+
+	return 0;
+
+}
+
+void init (char** command) {
 
 	int i = 0;
-
-	command = (char**)malloc(DEFAULT_STRING_LENGTH * sizeof(char*));
-
-	for(i = 0; i < DEFAULT_STRING_LENGTH; i++){
-
-		*(command + i) = (char *)malloc(DEFAULT_STRING_LENGTH);	
 	
+	command = (char**)malloc(DEFAULT_STRING_LENGTH * sizeof(char));
+
+	for(i=0; i<DEFAULT_STRING_LENGTH; i++){
+
+		*(command+i) = (char*)malloc(DEFAULT_STRING_LENGTH * sizeof(char));
+
 	}
-
-	type_prompt();
-	read_command(command);
-	execute_command(command);
-
-/*
-	do {
-
-		type_prompt();
-		//fgets(command, DEFAULT_STRING_LENGTH, stdin);
-		
-		read_command();
-
-	}while (1);
-*/
-	return 0;
 
 }
 
@@ -48,9 +64,18 @@ void type_prompt () {
 	char buffer [DEFAULT_STRING_LENGTH];
 
 	ptr = getcwd(buffer, DEFAULT_STRING_LENGTH);
-	strcat(ptr, ">");
+	if (ptr == buffer) {
+	
+		strcat(ptr, ">");
+		printf("%s", ptr);
+	
+	}
+	
+	else {
 
-	printf("%s", ptr);
+		printf("Error con el comando getcwd: %s\n", strerror(errno));
+
+	}
 
 }
 
@@ -60,7 +85,7 @@ void read_command (char** command) {
 	char* substr;
 	int i = 1;
 
-	fgets(buffer, DEFAULT_STRING_LENGTH, stdin);
+	fgets(buffer, sizeof(buffer), stdin);
 	buffer[strlen(buffer)-1] = '\0';
 
 	substr = strtok(buffer, " ");
@@ -105,24 +130,37 @@ void execute_command (char** command) {
 
 	pid_t p;
 
-	p = fork();
 
-	if (p == -1) {
+	if (strcmp(command[0], "cd\0") == 0){
+
+		if(chdir(command[1]) == -1) {
+
+			printf("Error con el comando '%s': %s\n", command[0], strerror(errno));
+		
+		}
+		
+	} 
 	
-		perror("Error en la llamada a fork.");
-	}
+	else {
 
-	else if (p == 0) {
+		p = fork();
 
-		execvp(command[0], command);
-
-	}
-
-	else 
-		printf("PID1:%d", p);
-
+		if (p == -1) {
 	
-	printf("PID3:%d",wait(NULL));
-	printf("PID2:%d", getpid());
+			perror("Error en la llamada a fork.");
+		}
+
+		else if (p == 0) {
+
+			if(execvp(command[0], command) == -1){
+
+				printf("Error en comando '%s': %s\n", command[0], strerror(errno));
+			
+			}
+
+		}
+
+		wait();
+	}
 
 }
