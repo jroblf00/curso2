@@ -3,6 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <errno.h>
 
 #define DEFAULT_STRING_LENGTH 256
@@ -15,9 +16,12 @@ void execute_command(char** command);
 
 int main (int argc, char** argv) {
 
+	int tablaPid [256];	
 	char** command;
 	int i = 0;
 	
+	tablaPid[0] = getpid();
+
 	do {	
 	
 		command = (char**)malloc(DEFAULT_STRING_LENGTH*sizeof(char*));
@@ -160,7 +164,7 @@ void execute_command (char** command) {
 
 		}
 
-		wait();
+		wait(NULL);
 	}
 
 }
