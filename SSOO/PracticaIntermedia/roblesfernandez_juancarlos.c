@@ -1,3 +1,10 @@
+
+/**
+* 
+* @author Juan Carlos Robles Fernandez
+*
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -7,27 +14,30 @@
 #include <errno.h>
 
 #define DEFAULT_STRING_LENGTH 256
+#define DEFAULT_TABLEPID_LENGTH 256 
 #define EXIT "exit\0"
+#define BACKGROUND "&\0"
 
 void init(char** command);
 void type_prompt();
 void read_command(char** command);
 void execute_command(char** command);
+void remove_frist_char(char* command);
+void read_path(char* command, char* path);
 
 int main (int argc, char** argv) {
 
-	int tablaPid [256];	
+	int tablePid [DEFAULT_TABLEPID_LENGTH];	
 	char** command;
-	int i = 0;
+	int posCommand = 0;
 	
-	tablaPid[0] = getpid();
+	tablePid[0] = getpid();
 
 	do {	
-	
 		command = (char**)malloc(DEFAULT_STRING_LENGTH*sizeof(char*));
-		for (i=0; i<DEFAULT_STRING_LENGTH; i++) {
+		for (posCommand=0; posCommand<DEFAULT_STRING_LENGTH; posCommand++) {
 
-			*(command+i) = (char*)malloc(DEFAULT_STRING_LENGTH*sizeof(char));
+			*(command+posCommand) = (char*)malloc(DEFAULT_STRING_LENGTH*sizeof(char));
 
 		}
 		
@@ -38,7 +48,7 @@ int main (int argc, char** argv) {
 			
 			execute_command(command);
 		
-		}	
+		}
 
 	} while (strcmp(command[0], EXIT) != 0);
 	
@@ -62,6 +72,12 @@ void init (char** command) {
 
 }
 
+/**
+*
+* Muestra la ruta actual de trabajo con el prompt '>'
+*
+*/
+
 void type_prompt () {
 
 	char* ptr;
@@ -83,17 +99,24 @@ void type_prompt () {
 
 }
 
+/**
+*
+* Lee el comando que se introduce por teclado
+*
+* @param matriz de punteros en el que se guardan los comandos introducidos
+*
+*/
+
 void read_command (char** command) {
 
 	char buffer [DEFAULT_STRING_LENGTH];
 	char* substr;
 	int i = 1;
-
-	fgets(buffer, sizeof(buffer), stdin);
+	
+	fgets(buffer+1, sizeof(buffer), stdin);
 	buffer[strlen(buffer)-1] = '\0';
-
 	substr = strtok(buffer, " ");
-
+	
 	if (substr != NULL) {
 	
 		memcpy(command[0], substr, strlen(substr));
@@ -106,6 +129,14 @@ void read_command (char** command) {
 	
 	}
 	
+	remove_frist_char(command[0]);
+	
+	/**
+	*
+	* Se separan los comandos y los argumentos en las diferentes columnas de la matriz
+	*
+	*/
+
 	while (command[i-1] != NULL) {
 	
 		substr = strtok(NULL, " ");
@@ -130,10 +161,33 @@ void read_command (char** command) {
 
 }
 
+/**
+*
+* Ejecuta el comando
+*
+* @param matriz con el comando a ejecutar
+*
+*/
+
 void execute_command (char** command) {
 
-	pid_t p;
+	char path[DEFAULT_STRING_LENGTH];
+	pid_t pidInit;
+	int posCommand = 0;
+	int background = 0;
 
+	while(command[posCommand] != NULL) {
+
+		if (strcmp(command[posCommand], BACKGROUND) == 0) {
+
+			background = 1;
+			command[posCommand] = NULL;	
+		
+		}
+
+		posCommand++;
+
+	}	
 
 	if (strcmp(command[0], "cd\0") == 0){
 
@@ -145,26 +199,87 @@ void execute_command (char** command) {
 		
 	} 
 	
-	else {
+	else if (command[0][0] != 0) {
 
-		p = fork();
+		pidInit = fork();
 
-		if (p == -1) {
+		if (pidInit == -1) {
 	
 			perror("Error en la llamada a fork.");
 		}
 
-		else if (p == 0) {
+		else if (pidInit == 0) {
 
-			if(execvp(command[0], command) == -1){
+			/*if(execvp(command[0], command) == -1){
 
 				printf("Error en comando '%s': %s\n", command[0], strerror(errno));
 			
+			}*/
+
+			read_path(command[0], path);
+
+
+			char* prueba2;			
+			prueba2 = (char*)malloc(256*sizeof(char));
+			char* const* prueba = prueba2;
+			prueba2 = getenv("xcalc");
+
+			
+			if (execve("usr/bin/xcalc", command, prueba) == -1) {
+
+				printf("Error en el comando");
+
 			}
 
 		}
+		
+		if (background == 0) {
 
-		wait(NULL);
+			wait(NULL);
+		
+		}
+
+		
+	
 	}
 
+}
+
+void remove_frist_char (char* command) {
+
+	char buffer [DEFAULT_STRING_LENGTH];
+	int pos = 1;
+	
+	//buffer[DEFAULT_STRING_LENGTH-1] = '\0';
+	
+	while ((command[pos] != '\n') && (pos<strlen(command))) {
+
+		buffer[pos-1] = command[pos];
+		pos++;
+	
+	}
+	
+	buffer[pos-1] = '\0';
+	strcpy(command, buffer);
+}
+
+void read_path (char* command, char* path) {
+
+	char buffer[DEFAULT_STRING_LENGTH];
+	FILE *file;
+	
+	strcpy(buffer, "whereis ");
+	strcat(buffer, command);
+	strcat(buffer, " > tmp && cat tmp | awk '{print$2}' > tmp2");
+	system(buffer);
+
+	file = fopen("tmp2", "r");
+	//fgets(path, DEFAULT_STRING_LENGTH, file);
+	
+	fscanf(file, "%s", path);
+
+
+	fclose(file);
+	system("rm tmp && rm tmp2");
+	
 }
