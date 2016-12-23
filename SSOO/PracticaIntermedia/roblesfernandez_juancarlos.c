@@ -15,6 +15,7 @@
 #include <errno.h>
 #include <signal.h>
 #include <fcntl.h>
+#include <assert.h>
 
 #define DEFAULT_STRING_LENGTH 256
 #define EXIT "exit\0"
@@ -25,7 +26,12 @@
  */
 #define BACKGROUND "&\0"
 #define PROMPT "#\0"
-#define REDIRECT ">"
+/**
+ * REDIRECT caracter con el que se manda la orden de redirigir la salida.
+ * Para activarlo se debe poner el programa a ejecutar, espacio, el simbolo
+ * de redireccion y el nombre del archivo al que se quiere redirigir.
+ */
+#define REDIRECT ">\0"
 
 void type_prompt();
 void read_command(char** command);
@@ -201,7 +207,7 @@ void execute_command (char** command) {
 		
 	} 
 	
-	else if ((command[0][0] != 0) && (redirect == 0) ) {
+	else if ((command[0][0] != 0) && (redirect == 0)) {
 
 		pidInit = fork();
 
@@ -310,6 +316,12 @@ void show_process () {
 
 }
 
+/**
+ * Redirecciona la salida al archivo indicado por comandos
+ *
+ * @param toda la entrada introducida por teclado
+ */
+
 void redirect_output(char** command) {
 
 	int i = 0;
@@ -329,16 +341,16 @@ void redirect_output(char** command) {
 	int  file = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0600);
 
 	if (file < 0)  
-		return  1;
+		printf("Error en open: %s", strerror(errno));
 
 	if (dup2(file ,STDOUT_FILENO) < 0)  
-		return  1;
+		printf("Error en dup2: %s", strerror(errno));
 
 	execute_command(command);
 
 	close(file);
 
 	if (dup2(0 ,1) < 0)  
-		return  1;
+		printf("Error en dup2: %s", strerror(errno));
 
 }
