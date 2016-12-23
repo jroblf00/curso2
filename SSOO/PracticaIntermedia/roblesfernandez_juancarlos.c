@@ -11,27 +11,36 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/stat.h>
 #include <errno.h>
+#include <signal.h>
+#include <fcntl.h>
 
 #define DEFAULT_STRING_LENGTH 256
-#define DEFAULT_TABLEPID_LENGTH 256 
 #define EXIT "exit\0"
+/**
+ * BACKGROUND caracter con el que se manda la orden que se ejecute en
+ * segundo plano. Para activarlo se tiene que dejar un espacio despues del 
+ * ultimo parametro y poner el caracter indicado.
+ */
 #define BACKGROUND "&\0"
+#define PROMPT "#\0"
+#define REDIRECT ">"
 
-void init(char** command);
 void type_prompt();
 void read_command(char** command);
 void execute_command(char** command);
 void remove_frist_char(char* command);
 void read_path(char* command, char* path);
+void show_process();
+void redirect_output(char** command);
 
 int main (int argc, char** argv) {
 
-	int tablePid [DEFAULT_TABLEPID_LENGTH];	
 	char** command;
 	int posCommand = 0;
-	
-	tablePid[0] = getpid();
+
+	signal (SIGINT, show_process);	
 
 	do {	
 		command = (char**)malloc(DEFAULT_STRING_LENGTH*sizeof(char*));
@@ -40,7 +49,7 @@ int main (int argc, char** argv) {
 			*(command+posCommand) = (char*)malloc(DEFAULT_STRING_LENGTH*sizeof(char));
 
 		}
-		
+	
 		type_prompt();
 		read_command(command);
 		
@@ -58,20 +67,6 @@ int main (int argc, char** argv) {
 
 }
 
-void init (char** command) {
-
-	int i = 0;
-	
-	command = (char**)malloc(DEFAULT_STRING_LENGTH * sizeof(char));
-
-	for(i=0; i<DEFAULT_STRING_LENGTH; i++){
-
-		*(command+i) = (char*)malloc(DEFAULT_STRING_LENGTH * sizeof(char));
-
-	}
-
-}
-
 /**
 *
 * Muestra la ruta actual de trabajo con el prompt '>'
@@ -86,7 +81,7 @@ void type_prompt () {
 	ptr = getcwd(buffer, DEFAULT_STRING_LENGTH);
 	if (ptr == buffer) {
 	
-		strcat(ptr, ">");
+		strcat(ptr, PROMPT);
 		printf("%s", ptr);
 	
 	}
@@ -163,7 +158,7 @@ void read_command (char** command) {
 
 /**
 *
-* Ejecuta el comando
+* Ejecuta el comando introducido por teclado
 *
 * @param matriz con el comando a ejecutar
 *
@@ -171,10 +166,10 @@ void read_command (char** command) {
 
 void execute_command (char** command) {
 
-	char path[DEFAULT_STRING_LENGTH];
 	pid_t pidInit;
 	int posCommand = 0;
 	int background = 0;
+	int redirect = 0;
 
 	while(command[posCommand] != NULL) {
 
@@ -183,6 +178,13 @@ void execute_command (char** command) {
 			background = 1;
 			command[posCommand] = NULL;	
 		
+		}
+
+		else if (strcmp(command[posCommand], REDIRECT) == 0) {
+
+			redirect = 1;
+			redirect_output(command);
+
 		}
 
 		posCommand++;
@@ -199,37 +201,28 @@ void execute_command (char** command) {
 		
 	} 
 	
-	else if (command[0][0] != 0) {
+	else if ((command[0][0] != 0) && (redirect == 0) ) {
 
 		pidInit = fork();
 
 		if (pidInit == -1) {
+
 	
-			perror("Error en la llamada a fork.");
+			printf("Error en la llamada a fork: %s", strerror(errno));
 		}
 
 		else if (pidInit == 0) {
 
-			/*if(execvp(command[0], command) == -1){
+			if(execvp(command[0], command) == -1){
 
 				printf("Error en comando '%s': %s\n", command[0], strerror(errno));
 			
-			}*/
-
-			read_path(command[0], path);
-
-
-			char* prueba2;			
-			prueba2 = (char*)malloc(256*sizeof(char));
-			char* const* prueba = prueba2;
-			prueba2 = getenv("xcalc");
-
-			
-			if (execve("usr/bin/xcalc", command, prueba) == -1) {
-
-				printf("Error en el comando");
-
 			}
+		}
+
+		else {
+
+				
 
 		}
 		
@@ -250,8 +243,6 @@ void remove_frist_char (char* command) {
 	char buffer [DEFAULT_STRING_LENGTH];
 	int pos = 1;
 	
-	//buffer[DEFAULT_STRING_LENGTH-1] = '\0';
-	
 	while ((command[pos] != '\n') && (pos<strlen(command))) {
 
 		buffer[pos-1] = command[pos];
@@ -263,6 +254,15 @@ void remove_frist_char (char* command) {
 	strcpy(command, buffer);
 }
 
+/**
+ *
+ * Lee la ruta en la que esta alojado el programa que se va a ejecutar
+ *
+ * @param *command comando que se va a ejecutar
+ * @param *path ruta donde esta alojado el programa a ejecutar
+ *
+ */
+ 
 void read_path (char* command, char* path) {
 
 	char buffer[DEFAULT_STRING_LENGTH];
@@ -274,12 +274,71 @@ void read_path (char* command, char* path) {
 	system(buffer);
 
 	file = fopen("tmp2", "r");
-	//fgets(path, DEFAULT_STRING_LENGTH, file);
-	
 	fscanf(file, "%s", path);
 
 
 	fclose(file);
 	system("rm tmp && rm tmp2");
 	
+}
+
+/**
+ *
+ * Muesta los procesos abiertos
+ *
+ */
+
+void show_process () {
+	
+	signal(SIGINT, SIG_IGN);
+
+	char buffer[DEFAULT_STRING_LENGTH];
+	char pid_char[4];
+	int pid_int = getpid();
+
+	printf("\n\nPulse intro para finalizar\n\n");
+	printf("PID   WCHAN   CMD\n");
+	
+	sprintf(pid_char,"%d" , pid_int);
+	strcpy(buffer, "ps -l | grep ");
+	strcat(buffer, pid_char);
+	strcat(buffer, " | awk '{print$4, $11, $14}'");
+	
+	system(buffer);
+
+	signal(SIGINT, show_process);
+
+}
+
+void redirect_output(char** command) {
+
+	int i = 0;
+	char filename[DEFAULT_STRING_LENGTH];
+
+	while (strcmp(command[i], REDIRECT) != 0) {
+
+		i++;
+
+	}
+
+	strcpy(filename, command[++i]);
+
+	command[i] = NULL;
+	command[--i] = NULL;
+
+	int  file = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0600);
+
+	if (file < 0)  
+		return  1;
+
+	if (dup2(file ,STDOUT_FILENO) < 0)  
+		return  1;
+
+	execute_command(command);
+
+	close(file);
+
+	if (dup2(0 ,1) < 0)  
+		return  1;
+
 }
