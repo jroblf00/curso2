@@ -9,6 +9,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		
+		
 		Scanner sc = new Scanner(System.in);		
 		Diccionario diccionario = new Diccionario();
 		String buffer;
@@ -34,7 +35,7 @@ public class Main {
 		diccionario.ordenar();
 		
 		Transformacion transformacion = new Transformacion(diccionario);
-		
+		transformacion.CalcularLongitudMinina();
 		transformacion.imprimir();
 		
 	}

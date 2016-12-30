@@ -4,7 +4,7 @@
  */
 
 public class Transformacion {
-	
+		
 	/**
 	 * tamaño de la matriz
 	 */
@@ -13,7 +13,12 @@ public class Transformacion {
 	/**
 	 * matriz con la longitud minima entre las palabras
 	 */
-	private int longitudMinimaEntrePalabras[][];
+	private double longitudMinimaEntrePalabras[][];
+	
+	/**
+	 * matriz con la longitud minima actualizada en cada paso
+	 */
+	private double longitudMinimaEntrePalabrasActualizada[][];
 	
 	/**
 	 * matriz con el camino que se debe seguir para la longitud minima
@@ -39,7 +44,8 @@ public class Transformacion {
 		
 		this.tamMatriz = this.diccionario.tamanio();
 		
-		this.longitudMinimaEntrePalabras = new int [this.tamMatriz][this.tamMatriz];
+		this.longitudMinimaEntrePalabras = new double [this.tamMatriz][this.tamMatriz];
+		this.longitudMinimaEntrePalabrasActualizada = new double [this.tamMatriz][this.tamMatriz];
 		this.caminoEntrePalabras = new int [this.tamMatriz][this.tamMatriz];
 		
 		for (int i=0;i<this.tamMatriz; i++) {
@@ -48,20 +54,20 @@ public class Transformacion {
 				
 				if (CompararPalabras(this.diccionario.acceder(i), this.diccionario.acceder(j)) == 1) {
 					
-					this.longitudMinimaEntrePalabras[i][j] = 0;
+					this.longitudMinimaEntrePalabras[i][j] = 1;
 					
 				}
 				
 				else  {
 					
-					this.longitudMinimaEntrePalabras[i][j] = -1;
+					this.longitudMinimaEntrePalabras[i][j] = Double.POSITIVE_INFINITY;
 					
 				} 
 				
 			}
 			
 		}
-		
+				
 		for (int i=0; i<this.tamMatriz; i++) {
 			
 			for (int j=0; j<this.tamMatriz; j++){
@@ -71,6 +77,8 @@ public class Transformacion {
 			}
 			
 		}
+		
+		CopiarMatriz(this.longitudMinimaEntrePalabras, this.longitudMinimaEntrePalabrasActualizada);
 		
 	}
 	
@@ -111,18 +119,71 @@ public class Transformacion {
 		
 	}
 	
+	/**
+	 * Calcula todas las longitudes minimas entre todas las palabras
+	 * usando el algoritomo de Floyd
+	 */
+	public void CalcularLongitudMinina() {
+				
+		double aux;
+		
+		for (int i=0; i<this.tamMatriz; i++){
+			
+			for (int j=0; j<this.tamMatriz; j++) {
+				
+				for (int k=0; k<this.tamMatriz; k++) {
+				
+					aux = this.longitudMinimaEntrePalabras[j][i] + this.longitudMinimaEntrePalabras[i][k];
+					
+					if (this.longitudMinimaEntrePalabras[j][k] > aux) {
+						
+						this.longitudMinimaEntrePalabrasActualizada[j][k] = aux;
+						this.caminoEntrePalabras[j][k] = i+1;
+						
+					}
+					
+				}
+				
+				CopiarMatriz(this.longitudMinimaEntrePalabrasActualizada, this.longitudMinimaEntrePalabras);
+				
+			}
+			
+		}
+		
+	}
+	
+	/**
+	 * 
+	 * @param matrizEntrada matriz a copiar
+	 * @param matrizSalida matriz copia de matrizEntrada
+	 */
+	
+	public void CopiarMatriz (double matrizEntrada[][], double matrizSalida[][]) {
+		
+		for (int i=0; i<matrizEntrada.length; i++) {
+			
+			for (int j=0; j<matrizEntrada.length; j++) {
+				
+				matrizSalida[i][j] = matrizEntrada[i][j];
+				
+			}
+			
+		}
+		
+	}
+	
 	public void imprimir () {
 		
 		for (int i=0; i<tamMatriz; i++) {
 			
 			for (int j=0; j<tamMatriz; j++) {
 				
-				System.out.print(longitudMinimaEntrePalabras[i][j]+"\t");
+				System.out.print(this.caminoEntrePalabras[i][j]+"\t");
 			}
 			
 			System.out.println();
-			
-		}		
+		
+		}
 		
 	}
 	
