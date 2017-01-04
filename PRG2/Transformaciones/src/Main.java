@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
@@ -32,12 +33,18 @@ public class Main {
 		
 		sc.close();
 		
-		diccionario.ordenar();
+		//diccionario.Ordenar();
 		
-		Transformacion transformacion = new Transformacion(diccionario);
-		transformacion.CalcularLongitudMinina();
-		transformacion.imprimir();
+		Transformacion transformacion = new Transformacion();
+		transformacion.IniciarTransformacion(inicio, fin, diccionario);
+		if (!transformacion.HaySolucion()) {
 		
+			
+			System.out.println("No hay solucion.");
+			
+		}
+		
+		//System.out.println(diccionario.toString());
 	}
 
 }

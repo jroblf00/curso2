@@ -1,84 +1,122 @@
 
+import java.util.ArrayList;
+
 /**
  * @author Juan Carlos Robles Fernandez
  */
 
 public class Transformacion {
+	
+	/**
+	 * contiene las palabas con la solucion
+	 */
+	//private ArrayList<String> solucion;
+	
+	/**
+	 * Indica si se ha encontrado la solucion final
+	 */
+	private boolean haySolucion;
+	
+	public Transformacion () {
 		
-	/**
-	 * tamaño de la matriz
-	 */
-	private int tamMatriz;
+		//this.solucion = new ArrayList<String>();
+		this.haySolucion = false;
+		
+	}
+	
+	public void IniciarTransformacion (String palabraInicio, String palabraFinal, Diccionario diccionario) {
+		
+		ArrayList <String> solucion = new ArrayList<String>();
+		BuscarCombinacion(palabraInicio, palabraFinal, diccionario, solucion);		
+		
+	}
 	
 	/**
-	 * matriz con la longitud minima entre las palabras
-	 */
-	private double longitudMinimaEntrePalabras[][];
-	
-	/**
-	 * matriz con la longitud minima actualizada en cada paso
-	 */
-	private double longitudMinimaEntrePalabrasActualizada[][];
-	
-	/**
-	 * matriz con el camino que se debe seguir para la longitud minima
-	 */
-	private int caminoEntrePalabras[][];
-	
-	Diccionario diccionario;
-	
-	/**
-	 * Constructor
+	 * Comprueba si las dos palabras introducidas son iguales para acabar la secuencia, si no añade
+	 * la palabra a un diccionario y busca todas sus adyacentes en 1 letra. Con el nuevo diccionario y 
+	 * la nueva palabra llama de manera recursiva a BuscarCombinacion.
 	 * 
-	 * Asigna a la matriz longitudMinimaEntrePalabras la primera conexion entre las
-	 * diferentes palabras del diccionario.
-	 * 0 si hay conexion directa entre dos palabras.
-	 * -1 si no existe conexion.
-	 * 
-	 * Inicializa la matriz caminoEntrePalabras a 0.
+	 * @param palabraInicio palabra desde que se arranca la secuencia de busqueda
+	 * @param palabraFinal palabra a la que se quiere llegar
+	 * @param diccionario diccionario con todas las palabras disponibles
 	 */
-	
-	public Transformacion (Diccionario diccionario) {
-		
-		this.diccionario = diccionario;
-		
-		this.tamMatriz = this.diccionario.tamanio();
-		
-		this.longitudMinimaEntrePalabras = new double [this.tamMatriz][this.tamMatriz];
-		this.longitudMinimaEntrePalabrasActualizada = new double [this.tamMatriz][this.tamMatriz];
-		this.caminoEntrePalabras = new int [this.tamMatriz][this.tamMatriz];
-		
-		for (int i=0;i<this.tamMatriz; i++) {
+	public void BuscarCombinacion (String palabraInicio, String palabraFinal, Diccionario diccionario, 
+			ArrayList<String> solucion) {
 			
-			for (int j=0; j<this.tamMatriz; j++) {
+		Diccionario diccionarioDuplicado = new Diccionario(diccionario);
+		Diccionario diccionarioAux;
+		//ArrayList<Integer> diccionarioPosiciones = new ArrayList<Integer>();
+		String palabraAux;
+		
+		
+		if (palabraInicio.equals(palabraFinal)) {
+			
+			this.haySolucion = true;
+			solucion.add(palabraFinal);
+			for (int i=0; i<solucion.size(); i++) {
 				
-				if (CompararPalabras(this.diccionario.acceder(i), this.diccionario.acceder(j)) == 1) {
-					
-					this.longitudMinimaEntrePalabras[i][j] = 1;
-					
-				}
-				
-				else  {
-					
-					this.longitudMinimaEntrePalabras[i][j] = Double.POSITIVE_INFINITY;
-					
-				} 
+				System.out.println(solucion.get(i));
 				
 			}
-			
 		}
-				
-		for (int i=0; i<this.tamMatriz; i++) {
+		
+		else {
 			
-			for (int j=0; j<this.tamMatriz; j++){
+			diccionarioAux = new Diccionario (BuscarPalabrasAdyacentes (palabraInicio, diccionarioDuplicado));
+			solucion.add(palabraInicio);
+			diccionario.Eliminar(palabraInicio);
+			
+			for (int i=0; i<diccionarioAux.Tamanio(); i++) {
+				//palabraAux = diccionarioDuplicado.Acceder(diccionarioPosiciones.get(i));
+				BuscarCombinacion(diccionarioAux.Acceder(i), palabraFinal, diccionario, solucion);
 				
-				this.caminoEntrePalabras[i][j] = 0;
-				
-			}
+			} 
 			
 		}
 		
-		CopiarMatriz(this.longitudMinimaEntrePalabras, this.longitudMinimaEntrePalabrasActualizada);
+	}
+	
+	/**
+	 * Busca en un diccionario las palabras que difieren en 1 letra.
+	 * 
+	 * @param palabra palabra para comparar con el diccionario
+	 * @param diccionario diccionario con las palabras deseadas a comparar
+	 * @return la lista de palabras que difieren en 1 letra con la palabra a comparar
+	 */
+	
+	public ArrayList<String> BuscarPalabrasAdyacentes(String palabra ,Diccionario diccionario) {
+		
+		ArrayList <String> palabrasAdyacentes = new ArrayList<String>();
+		
+		for (int i=0; i<diccionario.Tamanio(); i++) {
+			
+			if (CompararPalabras(palabra, diccionario.Acceder(i)) == 1) {
+				
+				palabrasAdyacentes.add(diccionario.Acceder(i));
+				
+			}
+			
+		} 
+		
+		return palabrasAdyacentes;
+		
+	}
+	
+	public ArrayList<Integer> BuscarPalabrasAdyacentesInt(String palabra ,Diccionario diccionario) {
+		
+		ArrayList <Integer> palabrasAdyacentes = new ArrayList<Integer>();
+		
+		for (int i=0; i<diccionario.Tamanio(); i++) {
+			
+			if (CompararPalabras(palabra, diccionario.Acceder(i)) == 1) {
+				
+				palabrasAdyacentes.add(i);
+				
+			}
+			
+		} 
+		
+		return palabrasAdyacentes;
 		
 	}
 	
@@ -116,74 +154,11 @@ public class Transformacion {
 		}
 		
 		return cont;
-		
 	}
 	
-	/**
-	 * Calcula todas las longitudes minimas entre todas las palabras
-	 * usando el algoritomo de Floyd
-	 */
-	public void CalcularLongitudMinina() {
-				
-		double aux;
+	public boolean HaySolucion () {
 		
-		for (int i=0; i<this.tamMatriz; i++){
-			
-			for (int j=0; j<this.tamMatriz; j++) {
-				
-				for (int k=0; k<this.tamMatriz; k++) {
-				
-					aux = this.longitudMinimaEntrePalabras[j][i] + this.longitudMinimaEntrePalabras[i][k];
-					
-					if (this.longitudMinimaEntrePalabras[j][k] > aux) {
-						
-						this.longitudMinimaEntrePalabrasActualizada[j][k] = aux;
-						this.caminoEntrePalabras[j][k] = i+1;
-						
-					}
-					
-				}
-				
-				CopiarMatriz(this.longitudMinimaEntrePalabrasActualizada, this.longitudMinimaEntrePalabras);
-				
-			}
-			
-		}
-		
-	}
-	
-	/**
-	 * 
-	 * @param matrizEntrada matriz a copiar
-	 * @param matrizSalida matriz copia de matrizEntrada
-	 */
-	
-	public void CopiarMatriz (double matrizEntrada[][], double matrizSalida[][]) {
-		
-		for (int i=0; i<matrizEntrada.length; i++) {
-			
-			for (int j=0; j<matrizEntrada.length; j++) {
-				
-				matrizSalida[i][j] = matrizEntrada[i][j];
-				
-			}
-			
-		}
-		
-	}
-	
-	public void imprimir () {
-		
-		for (int i=0; i<tamMatriz; i++) {
-			
-			for (int j=0; j<tamMatriz; j++) {
-				
-				System.out.print(this.caminoEntrePalabras[i][j]+"\t");
-			}
-			
-			System.out.println();
-		
-		}
+		return this.haySolucion;
 		
 	}
 	

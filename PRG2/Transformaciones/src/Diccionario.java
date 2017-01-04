@@ -24,6 +24,58 @@ public class Diccionario {
 		
 	}
 	
+	public Diccionario (ArrayList<String> diccionario) {
+		
+		this.diccionario = new ArrayList<String>();
+		
+		for (int i=0; i<diccionario.size(); i++) {
+			
+			this.diccionario.add(diccionario.get(i));
+			
+		}
+		
+	}
+	
+	
+	/**
+	 * Contructor
+	 * 
+	 * Crea un diccionario con los valores de otro diccionario
+	 * 
+	 * @param diccionario diccionario del que se cogen los valores
+	 */
+	public Diccionario (Diccionario diccionario) {
+		
+		this.diccionario = new ArrayList<String>();
+		
+		for (int i=0; i<diccionario.Tamanio(); i++) {
+			
+			this.diccionario.add(diccionario.Acceder(i));
+			
+		}
+		
+	}
+	
+	/**
+	 * 
+	 * @param palabra String de la palabra que se desea eliminar
+	 */
+	public void Eliminar (String palabra) {
+		
+		this.diccionario.remove(palabra);
+		
+	}
+	
+	/**
+	 * 
+	 * @param posicion posicion de la palabra que se desea eliminar
+	 */
+	public void Eliminar (int posicion) {
+		
+		this.diccionario.remove(posicion);
+		
+	}
+	
 	/**
 	 * @param palabra string que se desea almacenar
 	 */
@@ -37,7 +89,7 @@ public class Diccionario {
 		
 	}
 	
-	public void ordenar () {
+	public void Ordenar () {
 		
 		Collections.sort(this.diccionario);
 		
@@ -49,15 +101,33 @@ public class Diccionario {
 	 * @param pos posicion a la que se desea acceder
 	 * @return string de la posicion que se desea acceder
 	 */
-	public String acceder (int pos) {
+	public String Acceder (int pos) {
 		
 		return this.diccionario.get(pos);
 		
 	}
 	
-	public int tamanio () {
+	public int Posicion (String palabra) {
+		
+		return this.diccionario.indexOf(palabra);
+		
+	}
+	
+	public int Tamanio () {
 		
 		return this.diccionario.size();
+		
+	}
+	
+	public int BuscarPosicion (String palabra) {
+		
+		return this.diccionario.indexOf(palabra);
+		
+	}
+	
+	public String toString () {
+		
+		return this.diccionario.toString();
 		
 	}
 }
