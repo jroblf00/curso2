@@ -1,164 +1,207 @@
 
-import java.util.ArrayList;
-
 /**
  * @author Juan Carlos Robles Fernandez
  */
 
 public class Transformacion {
+
+	/**
+	 * tamMatriz contiene el tamaño de las matrices.
+	 */
+	private int tamMatriz;
 	
 	/**
-	 * contiene las palabas con la solucion
+	 * adyacentes[][] contiene la informacion de si dos palabras son adyacentes.
 	 */
-	//private ArrayList<String> solucion;
+	private int adyacentes[][];
 	
 	/**
-	 * Indica si se ha encontrado la solucion final
+	 * caminos[][] contiene el camino mas corto entre dos palabras.
 	 */
-	private boolean haySolucion;
+	private int caminos[][];
 	
-	public Transformacion () {
+	/**
+	 * camino[] contiene el camino que hay que seguir en la transformacion de las dos palabras
+	 * elegidas
+	 */
+	private int camino[];
+	
+	/**
+	 * diccionario contiene las palabras con las que se puede aplicar la transformacion.
+	 */
+	private Diccionario diccionario;
+	
+	public Transformacion(Diccionario diccionario){
 		
-		//this.solucion = new ArrayList<String>();
-		this.haySolucion = false;
+		this.tamMatriz = diccionario.tamanio();
+		this.adyacentes = new int[this.tamMatriz][this.tamMatriz];
+		this.caminos = new int[this.tamMatriz][this.tamMatriz];
+		this.diccionario = diccionario;
 		
+		generarAdyacencia();
 	}
 	
-	public void IniciarTransformacion (String palabraInicio, String palabraFinal, Diccionario diccionario) {
-		
-		ArrayList <String> solucion = new ArrayList<String>();
-		BuscarCombinacion(palabraInicio, palabraFinal, diccionario, solucion);		
-		
-	}
-	
 	/**
-	 * Comprueba si las dos palabras introducidas son iguales para acabar la secuencia, si no añade
-	 * la palabra a un diccionario y busca todas sus adyacentes en 1 letra. Con el nuevo diccionario y 
-	 * la nueva palabra llama de manera recursiva a BuscarCombinacion.
+	 * Guarda en la matriz adyacentes si dos palabras son adyacentes
 	 * 
-	 * @param palabraInicio palabra desde que se arranca la secuencia de busqueda
-	 * @param palabraFinal palabra a la que se quiere llegar
-	 * @param diccionario diccionario con todas las palabras disponibles
 	 */
-	public void BuscarCombinacion (String palabraInicio, String palabraFinal, Diccionario diccionario, 
-			ArrayList<String> solucion) {
-			
-		Diccionario diccionarioDuplicado = new Diccionario(diccionario);
-		Diccionario diccionarioAux;
-		//ArrayList<Integer> diccionarioPosiciones = new ArrayList<Integer>();
-		String palabraAux;
+	public void generarAdyacencia(){
 		
-		
-		if (palabraInicio.equals(palabraFinal)) {
+		for (int i=0; i<this.tamMatriz; i++) {
 			
-			this.haySolucion = true;
-			solucion.add(palabraFinal);
-			for (int i=0; i<solucion.size(); i++) {
+			for (int j=0;j<this.tamMatriz; j++) {
 				
-				System.out.println(solucion.get(i));
+				if (i == j) {
+					
+					this.adyacentes[i][j] = Integer.MAX_VALUE;
+					
+				} 
+					
+				else {
 				
+					this.adyacentes[i][j] = compararPalabras(this.diccionario.acceder(i), this.diccionario.acceder(j));
+				
+				}	
 			}
-		}
-		
-		else {
-			
-			diccionarioAux = new Diccionario (BuscarPalabrasAdyacentes (palabraInicio, diccionarioDuplicado));
-			solucion.add(palabraInicio);
-			diccionario.Eliminar(palabraInicio);
-			
-			for (int i=0; i<diccionarioAux.Tamanio(); i++) {
-				//palabraAux = diccionarioDuplicado.Acceder(diccionarioPosiciones.get(i));
-				BuscarCombinacion(diccionarioAux.Acceder(i), palabraFinal, diccionario, solucion);
-				
-			} 
 			
 		}
 		
 	}
 	
 	/**
-	 * Busca en un diccionario las palabras que difieren en 1 letra.
+	 * Si son del mismo tamaño compara las letras, si tienen mas de 1 letra diferente devuelve infinito.
+	 * si son de diferente tamaño devuelve infinito.
 	 * 
-	 * @param palabra palabra para comparar con el diccionario
-	 * @param diccionario diccionario con las palabras deseadas a comparar
-	 * @return la lista de palabras que difieren en 1 letra con la palabra a comparar
+	 * @param palabra1 una palabra a comparar
+	 * @param palabra2 otra palabra a comparar
+	 * @return la cantidad de letras diferentes que existen entre las dos palabras
 	 */
-	
-	public ArrayList<String> BuscarPalabrasAdyacentes(String palabra ,Diccionario diccionario) {
+	public int compararPalabras (String palabra1, String palabra2) {
 		
-		ArrayList <String> palabrasAdyacentes = new ArrayList<String>();
-		
-		for (int i=0; i<diccionario.Tamanio(); i++) {
-			
-			if (CompararPalabras(palabra, diccionario.Acceder(i)) == 1) {
-				
-				palabrasAdyacentes.add(diccionario.Acceder(i));
-				
-			}
-			
-		} 
-		
-		return palabrasAdyacentes;
-		
-	}
-	
-	public ArrayList<Integer> BuscarPalabrasAdyacentesInt(String palabra ,Diccionario diccionario) {
-		
-		ArrayList <Integer> palabrasAdyacentes = new ArrayList<Integer>();
-		
-		for (int i=0; i<diccionario.Tamanio(); i++) {
-			
-			if (CompararPalabras(palabra, diccionario.Acceder(i)) == 1) {
-				
-				palabrasAdyacentes.add(i);
-				
-			}
-			
-		} 
-		
-		return palabrasAdyacentes;
-		
-	}
-	
-	/**
-	 * Si las palabras son iguales realiza la operacion.
-	 * Si no son iguales retorna -1.
-	 * 
-	 * @param palabra1 un string a comparar
-	 * @param palabra2 oto string a comparar
-	 * @return el numero de letras desiguales entre las dos palabras comparadas
-	 */
-	
-	public int CompararPalabras(String palabra1, String palabra2) {
-		
-		int cont = 0;
+		int diferencia = 0;
 		
 		if (palabra1.length() == palabra2.length()) {
-				
+			
 			for (int i=0; i<palabra1.length(); i++) {
-								
+				
 				if (palabra1.charAt(i) != palabra2.charAt(i)) {
 					
-					cont++;
+					diferencia++;
 					
 				}
-
+				
 			}
-		
+			
 		}
 		
 		else {
 			
-			return -1;
+			diferencia = Integer.MAX_VALUE;
 			
 		}
 		
-		return cont;
+		if (diferencia > 1) {
+			
+			diferencia = Integer.MAX_VALUE;
+			
+		}
+		
+		return diferencia;
+		
 	}
 	
-	public boolean HaySolucion () {
+	/**
+	 * Usa el algoritmo Floyd-Warshall para generar la matriz de palabras minimas (adyacentes) y la matriz
+	 * con la ruta que se debe de seguir (caminos)
+	 */
+	public void generarCaminos () {
 		
-		return this.haySolucion;
+		for (int i=0; i<this.tamMatriz; i++) {
+			
+			for (int j=0; j<this.tamMatriz; j++) {
+				
+				this.caminos[i][j] = j;
+				
+			}
+			
+		}
+		
+		for (int i=0; i<this.tamMatriz; i++) {
+			
+			for (int j=0; j<this.tamMatriz; j++) {
+				
+				for (int k=0; k<this.tamMatriz; k++) {
+					
+					if (this.adyacentes[j][i] != Integer.MAX_VALUE && this.adyacentes[i][k] != Integer.MAX_VALUE
+							&& this.adyacentes[j][i] + this.adyacentes[i][k] < this.adyacentes[j][k]) {
+						
+						this.adyacentes[j][k] = this.adyacentes[j][i] + this.adyacentes[i][k];
+						this.caminos[j][k] = this.caminos[j][i];
+						
+					}
+					
+				}
+				
+			}
+			
+			
+			
+		}
+		
+	}
+	
+	/**
+	 * Guarda en camino[] la ruta de palabras que se tiene que seguir
+	 * 
+	 * @param posicionPalabra1 palabra desde la que se sale
+	 * @param posicionPalabra2 palabra a la que se llega
+	 */
+	public void obtenerCamino (int posicionPalabra1, int posicionPalabra2) {
+		
+		int tamCamino = this.adyacentes[posicionPalabra1][posicionPalabra2];
+		
+		if (tamCamino == Integer.MAX_VALUE) {
+			
+			this.camino = null;
+			
+		}
+		
+		else {
+			
+			this.camino = new int[tamCamino+1];
+			this.camino[0] = posicionPalabra1;
+			
+			for (int i=0; i<tamCamino; i++) {
+				
+				posicionPalabra1 = this.caminos[posicionPalabra1][posicionPalabra2];
+				this.camino[i+1] = posicionPalabra1;
+				
+			}
+			
+		}
+		
+	}
+	
+	public String imprimirCamino () {
+		
+		StringBuffer imprimir = new StringBuffer(); 
+		
+		if (this.camino == null) {
+			
+			imprimir.append("Sin solución.");
+		}
+		
+		else {
+			
+			for (int i=0; i<this.camino.length; i++) {
+				
+				imprimir.append(this.diccionario.acceder(this.camino[i]) + "\n");
+				
+			}
+			
+		}
+				
+		return imprimir.toString();
 		
 	}
 	
