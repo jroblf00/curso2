@@ -22,6 +22,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.text.DefaultEditorKit;
 
 public class VentanaCrear extends JFrame {
 
@@ -37,9 +38,9 @@ public class VentanaCrear extends JFrame {
 	JMenuItem menuAbrirPas = new JMenuItem("Abrir Pasatiempos");
 	JMenuItem menuGuardarPas = new JMenuItem("Guardar Pasatiempos como...");
 	JMenuItem menuSalir = new JMenuItem("Salir");
-	JMenuItem menuCopiar = new JMenuItem("Copiar");
-	JMenuItem menuCortar = new JMenuItem("Cortar");
-	JMenuItem menuPegar = new JMenuItem("Pegar");
+	JMenuItem menuCopiar = new JMenuItem(new DefaultEditorKit.CopyAction());
+	JMenuItem menuCortar = new JMenuItem(new DefaultEditorKit.CutAction());
+	JMenuItem menuPegar = new JMenuItem(new DefaultEditorKit.PasteAction());
 	JButton botonAbrirPas = new JButton("Abrir Pasatiempos");
 	JButton botonGuardarPas = new JButton("Guardar Pasatiempos como...");
 	JButton botonAbrirDic = new JButton("Abrir Diccionario");
@@ -68,6 +69,10 @@ public class VentanaCrear extends JFrame {
 	JScrollPane despla = new JScrollPane(textDic);
 	
 	public VentanaCrear () {
+				
+		menuPegar.setText("Pegar");
+		menuCopiar.setText("Copiar");
+		menuCortar.setText("Cortar");
 		
 		panel.setLayout(bl);
 		panelDatos.setLayout(gl);
@@ -194,6 +199,23 @@ public class VentanaCrear extends JFrame {
 			}
 		});
 		
+		botonGuardarDic.addActionListener (new ActionListener ( )
+		{
+			public void actionPerformed (ActionEvent arg0) {
+			
+				try {
+					
+					guardarDiccionario();
+					
+				} catch (IOException e) {
+					
+					e.printStackTrace();
+					
+				}
+				
+			}
+		});
+		
 		///////////////
 		
 		menuResolver.addActionListener (new ActionListener ( )
@@ -266,16 +288,7 @@ public class VentanaCrear extends JFrame {
 			}
 		});
 		
-		menuCopiar.addActionListener (new ActionListener ( )
-		{
-			public void actionPerformed (ActionEvent arg0) {
-			
-				textEntrada.copy();
-				textSalida.copy();
-				textDic.copy();
-				
-			}
-		});
+	
 		
 		menuGuardarDic.addActionListener (new ActionListener ( )
 		{
@@ -283,12 +296,23 @@ public class VentanaCrear extends JFrame {
 			
 				try {
 					
-					guardarPasatiempos ();
+					guardarDiccionario();
 					
 				} catch (IOException e) {
 					
 					e.printStackTrace();
 				}
+				
+			}
+		});
+		/*
+		menuCopiar.addActionListener (new ActionListener ( )
+		{
+			public void actionPerformed (ActionEvent arg0) {
+			
+				textEntrada.copy();
+				textSalida.copy();
+				textDic.copy();
 				
 			}
 		});
@@ -311,7 +335,7 @@ public class VentanaCrear extends JFrame {
 				
 					
 			}
-		});
+		});*/
 		
 	}
 	
