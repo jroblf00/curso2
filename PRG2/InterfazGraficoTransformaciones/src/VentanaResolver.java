@@ -1,4 +1,5 @@
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,6 +16,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -25,7 +27,10 @@ public class VentanaResolver extends JFrame {
 	int cantPalInter = 20;
 	int tamPalabras = 16;
 	
+	String resolucion;
+	
 	ArrayList<JTextField[]> arrayPalInter;/* = new ArrayList<JTextField[]>();*/
+	
 	
 	JPanel panel = new JPanel();
 	JPanel panelInfo = new JPanel();
@@ -153,6 +158,15 @@ public class VentanaResolver extends JFrame {
 		this.setBounds(0, 0, 800, 600);
 		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		this.add(panel);
+		if (textEntrada.getText().compareTo("")!=0) {
+		resolver();
+		mostrarPrimeraPalabra();
+		mostrarUltimaPalabra();
+		}
+			
+			
+			
+		
 		
 		botonCargar.addActionListener (new ActionListener ( )
 		{
@@ -160,30 +174,88 @@ public class VentanaResolver extends JFrame {
 			
 				try {
 					
-					abrirPasatiempos ();
+					cargar();
 					
-					 tamPalabras = textEntrada.getText().length();
-				     glLestrasPalInter = crearGridLayout(cantPalInter, tamPalabras);
-				     panelLestraPalInter.setLayout(glLestrasPalInter);
-				     scrollLetrasPalInter.add(panelLestraPalInter);
-				     panelPalInter.removeAll();
-				     panelPalInter.add(labelPalInter, BorderLayout.NORTH);
-					 panelPalInter.add(scrollLetrasPalInter, BorderLayout.CENTER);
-					 insertarTextPalInter ();
-					 panelPalInter.updateUI();
-				     
-					 
-				     
 				} catch (IOException e) {
 					
 					e.printStackTrace();
-					
+			
 				}
+				
+			}
+			
+		});
+		
+		botonResolver.addActionListener (new ActionListener ( )
+		{
+			public void actionPerformed (ActionEvent arg0) {
+			
+				mostrarResolucion();
+				
+			}
+		});
+	
+		menuAyuda.addActionListener (new ActionListener ( )
+		{
+			public void actionPerformed (ActionEvent arg0) {
+			
+				ayuda();
+				
+			}
+		});
+		
+		botonAyuda.addActionListener (new ActionListener ( )
+		{
+			public void actionPerformed (ActionEvent arg0) {
+			
+				ayuda();
+				
+			}
+		});
+		
+		///////////////////
+		
+		menuCargarPas.addActionListener (new ActionListener ( )
+		{
+			public void actionPerformed (ActionEvent arg0) {
+			
+				try {
+					
+					cargar();
+					
+				} catch (IOException e) {
+					
+					e.printStackTrace();
+			
+				}
+				
+			}
+			
+		});
+		
+		menuResolver.addActionListener (new ActionListener ( )
+		{
+			public void actionPerformed (ActionEvent arg0) {
+			
+				mostrarResolucion();
+				
+			}
+		});
+	
+		
+		
+		menuSalir.addActionListener (new ActionListener ( )
+		{
+			public void actionPerformed (ActionEvent arg0) {
+			
+				dispose();
 				
 			}
 		});
 		
 	}
+	
+	
 	
 	public JTextField[] iniciarTextPalInter () {
 		
@@ -267,7 +339,7 @@ public class VentanaResolver extends JFrame {
 				
 	}
 	
-public void abrirPasatiempos () throws IOException {
+	public void abrirPasatiempos () throws IOException {
 		
 		String cadena;
 		StringBuffer sb = new StringBuffer();
@@ -295,6 +367,152 @@ public void abrirPasatiempos () throws IOException {
 		textDic.setText(sb.toString());    
 	     buffer.close();
 	   
+	}
+
+	public void resolver () {
+	
+		Diccionario diccionario = new Diccionario();
+		StringTokenizer st = new StringTokenizer(textDic.getText());
+		
+		while (st.hasMoreTokens()) {
+			
+			diccionario.insertar(st.nextToken());
+			
+		}
+	
+		Transformacion transformacion = new Transformacion(diccionario);
+		transformacion.generarCaminos();
+		transformacion.obtenerCamino(textEntrada.getText(), textSalida.getText());
+		if (transformacion.hayCamino() == false) {
+			
+			JOptionPane.showMessageDialog(null,"No se ha encontrado solucion.");
+			
+		}
+		else {
+		
+			resolucion = transformacion.getCamino();
+		
+		}
+		
+		
+	}
+	
+	public void mostrarPrimeraPalabra () {
+		
+		if (tamPalabras>0) {
+			
+			int cont = 0;
+			
+			for (int i=0; i<cantPalInter; i++) {
+				
+				for (int j=0; j<tamPalabras; j++) {
+					
+					if (cont<tamPalabras) {
+						
+						arrayPalInter.get(j)[i].setText(Character.toString(textEntrada.getText().charAt(cont)));
+						arrayPalInter.get(j)[i].setEditable(false);
+						cont++;
+						
+					}
+					
+				}
+				
+			}
+		
+		}
+		
+	}
+	
+	public void mostrarUltimaPalabra () {
+		
+		int cont=0;
+		int cont2=0;
+		for (int i=0; i<16; i++) {
+			
+			for (int j=0; j<arrayPalInter.size(); j++) {
+				
+				if (cont<tamPalabras && cont2>=tamPalabras*(cantPalInter-1)) {
+					
+					arrayPalInter.get(j)[i].setText(Character.toString(textSalida.getText().charAt(cont)));
+					arrayPalInter.get(j)[i].setEditable(false);
+					cont++;
+					
+				}
+				
+				cont2++;
+				
+			}
+		}
+		
+	}
+	
+	public void mostrarResolucion () {
+		
+		int cont = 0;
+		
+		for (int i=0; i<arrayPalInter.get(0).length; i++) {
+			
+			for (int j=0; j<arrayPalInter.size(); j++) {
+				
+				if (cont<resolucion.length()) {
+					
+					arrayPalInter.get(j)[i].setText(Character.toString(resolucion.charAt(cont)));
+					cont++;
+					
+				}
+				
+			}
+			
+		}
+		
+	}
+	
+	public void ayuda() {
+		
+		boolean letraCambiada=false;
+		int cont = 0;
+		
+		for (int i=0; i<arrayPalInter.get(0).length; i++) {
+			
+			for (int j=0; j<arrayPalInter.size(); j++) {
+				
+				if (cont<resolucion.length()) {
+					
+					if (arrayPalInter.get(j)[i].getText().compareTo(
+							Character.toString(resolucion.charAt(cont))) != 0 && !letraCambiada){
+						
+						letraCambiada=true;
+						
+						arrayPalInter.get(j)[i].setText(Character.toString(resolucion.charAt(cont)));
+						arrayPalInter.get(j)[i].setBackground(Color.RED);
+					}
+					
+					cont++;
+					
+				}
+				
+			}
+			
+		}
+		
+	}
+	
+	public void cargar () throws IOException {
+		
+		abrirPasatiempos ();
+		tamPalabras = textEntrada.getText().length();
+		glLestrasPalInter = crearGridLayout(cantPalInter, tamPalabras);
+		panelLestraPalInter.setLayout(glLestrasPalInter);
+		scrollLetrasPalInter.removeAll();
+		scrollLetrasPalInter.add(panelLestraPalInter);
+		insertarTextPalInter ();
+		panelPalInter.updateUI();
+		panelPalInter.repaint();
+		repaint();
+		resolver();
+		mostrarPrimeraPalabra();
+		mostrarUltimaPalabra(); 
+		
 	}
 	
 }

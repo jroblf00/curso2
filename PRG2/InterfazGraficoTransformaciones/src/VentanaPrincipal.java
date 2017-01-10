@@ -97,6 +97,33 @@ public class VentanaPrincipal extends JFrame{
 			}
 		});
 		
+		botonSalir.addActionListener (new ActionListener ( )
+		{
+			public void actionPerformed (ActionEvent arg0) {
+			
+				System.exit(0);
+				
+			}
+		});
+		
+		menuCrear.addActionListener (new ActionListener ( )
+		{
+			public void actionPerformed (ActionEvent arg0) {
+			
+				new VentanaCrear().setVisible(true);
+				
+			}
+		});
+		
+		menuResolver.addActionListener (new ActionListener ( )
+		{
+			public void actionPerformed (ActionEvent arg0) {
+			
+				new VentanaResolver("", "", "",0).setVisible(true);
+				
+			}
+		});
+		
 		menuSalir.addActionListener (new ActionListener ( )
 		{
 			public void actionPerformed (ActionEvent arg0) {

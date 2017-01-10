@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
@@ -14,7 +15,7 @@ public class LetraPalabraIntermedia extends JTextField{
 			public void keyTyped(KeyEvent e)
 			 
 			{if (getText().length()== 1)
-			 
+				
 			     e.consume();
 			}
 			 
@@ -24,6 +25,14 @@ public class LetraPalabraIntermedia extends JTextField{
 			public void keyReleased(KeyEvent arg0) {
 			}
 			});
+		
+		
+		
+	}
+	
+	public void cambiarColorRojo(){
+		
+		this.setSelectionColor(Color.RED);
 		
 	}
 	

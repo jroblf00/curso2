@@ -26,6 +26,8 @@ public class Transformacion {
 	 */
 	private int camino[];
 	
+	private int tamCamino;
+	
 	/**
 	 * diccionario contiene las palabras con las que se puede aplicar la transformacion.
 	 */
@@ -151,6 +153,44 @@ public class Transformacion {
 		
 	}
 	
+	public void generarCaminos (int tamCamino) {
+		
+		generarAdyacencia();
+		
+		for (int i=0; i<this.tamMatriz; i++) {
+			
+			for (int j=0; j<this.tamMatriz; j++) {
+				
+				this.caminos[i][j] = j;
+				
+			}
+			
+		}
+		
+		for (int i=0; i<this.tamMatriz; i++) {
+			
+			for (int j=0; j<this.tamMatriz; j++) {
+				
+				for (int k=0; k<this.tamMatriz; k++) {
+					
+					if (this.adyacentes[j][i] != Integer.MAX_VALUE && this.adyacentes[i][k] != Integer.MAX_VALUE
+							&& this.adyacentes[j][i] + this.adyacentes[i][k] < this.adyacentes[j][k]) {
+						
+						this.adyacentes[j][k] = this.adyacentes[j][i] + this.adyacentes[i][k];
+						this.caminos[j][k] = this.caminos[j][i];
+						
+					}
+					
+				}
+				
+			}
+			
+			
+			
+		}
+		
+	}
+	
 	/**
 	 * Guarda en camino[] la ruta de palabras que se tiene que seguir
 	 * 
@@ -159,9 +199,9 @@ public class Transformacion {
 	 */
 	public void obtenerCamino (int posicionPalabra1, int posicionPalabra2) {
 		
-		int tamCamino = this.adyacentes[posicionPalabra1][posicionPalabra2];
+		this.tamCamino = this.adyacentes[posicionPalabra1][posicionPalabra2];
 		
-		if (tamCamino == Integer.MAX_VALUE) {
+		if (this.tamCamino == Integer.MAX_VALUE) {
 			
 			this.camino = null;
 			
@@ -180,6 +220,72 @@ public class Transformacion {
 			}
 			
 		}
+		
+	}
+	
+	public void obtenerCamino (String palabra1, String palabra2) {
+		
+		int posicionPalabra1 = this.diccionario.buscarPosicion(palabra1);
+		int posicionPalabra2 = this.diccionario.buscarPosicion(palabra2);
+		
+		if (this.diccionario.existePalabra(palabra1) && this.diccionario.existePalabra(palabra2)) { 
+		
+			this.tamCamino = this.adyacentes[posicionPalabra1][posicionPalabra2];
+			
+			if (this.tamCamino == Integer.MAX_VALUE) {
+				
+				this.camino = null;
+				
+			}
+			
+			else {
+				
+				this.camino = new int[tamCamino+1];
+				this.camino[0] = posicionPalabra1;
+				
+				for (int i=0; i<tamCamino; i++) {
+					
+					posicionPalabra1 = this.caminos[posicionPalabra1][posicionPalabra2];
+					this.camino[i+1] = posicionPalabra1;
+					
+				}
+				
+			}
+		
+		}
+		
+		else {
+			
+			this.camino = null;
+			
+		}
+		
+	}
+	
+	public int tamCamino () {
+		
+		return this.tamCamino;
+		
+	}
+	
+	public boolean hayCamino () {
+		
+		
+		return this.camino != null;
+		
+	}
+	
+	public String getCamino () {
+		
+		StringBuffer buffer = new StringBuffer();
+		
+		for (int i=0; i<this.camino.length; i++) {
+			
+			buffer.append(this.diccionario.acceder(this.camino[i]));
+			
+		}
+		
+		return buffer.toString();
 		
 	}
 	

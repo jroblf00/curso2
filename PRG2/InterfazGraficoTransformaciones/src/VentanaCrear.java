@@ -32,7 +32,7 @@ public class VentanaCrear extends JFrame {
 	JMenu menuEdicion = new JMenu("Edicion");
 	JMenu menuInicio = new JMenu("Inicio");
 	JMenuItem menuResolver = new JMenuItem("Resolver");
-	JMenuItem menuAbirDic = new JMenuItem("Abrir diccionario");
+	JMenuItem menuAbrirDic = new JMenuItem("Abrir diccionario");
 	JMenuItem menuGuardarDic = new JMenuItem("Guardar diccionario");
 	JMenuItem menuAbrirPas = new JMenuItem("Abrir Pasatiempos");
 	JMenuItem menuGuardarPas = new JMenuItem("Guardar Pasatiempos como...");
@@ -119,7 +119,7 @@ public class VentanaCrear extends JFrame {
 		menuInicio.add(menuAbrirPas);
 		menuInicio.add(menuGuardarPas);
 		menuInicio.addSeparator();
-		menuInicio.add(menuAbirDic);
+		menuInicio.add(menuAbrirDic);
 		menuInicio.add(menuGuardarDic);
 		menuInicio.addSeparator();
 		menuInicio.add(menuSalir);
@@ -138,21 +138,7 @@ public class VentanaCrear extends JFrame {
 		{
 			public void actionPerformed (ActionEvent arg0) {
 			
-				
-				if (textDic.getText().equals("") || textEntrada.getText().equals("") || 
-						textNumPal.getText().equals("") ||	textSalida.getText().equals("")) {
-					
-					JOptionPane.showMessageDialog(null,"Error, parametros incompletos.");
-					
-				}
-				
-				else { 
-				
-					
-					new VentanaResolver(textDic.getText(), textEntrada.getText(), textSalida.getText(),
-							Integer.parseInt(textNumPal.getText())).setVisible(true);
-				
-				}
+				resolver();
 					
 			}
 		});
@@ -204,6 +190,78 @@ public class VentanaCrear extends JFrame {
 					e.printStackTrace();
 					
 				}
+				
+			}
+		});
+		
+		///////////////
+		
+		menuResolver.addActionListener (new ActionListener ( )
+		{
+			public void actionPerformed (ActionEvent arg0) {
+			
+				resolver();
+				
+			}
+		});
+		
+		menuGuardarPas.addActionListener (new ActionListener ( )
+		{
+			public void actionPerformed (ActionEvent arg0) {
+			
+				try {
+					
+					guardarPasatiempos ();
+					
+				} catch (IOException e) {
+					
+					e.printStackTrace();
+					
+				}
+				
+			}
+		});
+		
+		menuAbrirPas.addActionListener (new ActionListener ( )
+		{
+			public void actionPerformed (ActionEvent arg0) {
+			
+				try {
+					
+					abrirPasatiempos ();
+					
+				} catch (IOException e) {
+					
+					e.printStackTrace();
+					
+				}
+				
+			}
+		});
+		
+		menuAbrirDic.addActionListener (new ActionListener ( )
+		{
+			public void actionPerformed (ActionEvent arg0) {
+			
+				try {
+					
+					abrirDiccionario();
+					
+				} catch (IOException e) {
+					
+					e.printStackTrace();
+					
+				}
+				
+			}
+		});
+		
+		menuSalir.addActionListener (new ActionListener ( )
+		{
+			public void actionPerformed (ActionEvent arg0) {
+			
+				//setVisible(false);
+				dispose();
 				
 			}
 		});
@@ -356,6 +414,49 @@ public class VentanaCrear extends JFrame {
 		fw = new FileWriter(file);
 		fw.write(buffer.toString());
 		fw.close();
+		
+	}
+	
+	public void resolver () {
+		
+		Diccionario diccionario = new Diccionario();				
+		
+		if (textDic.getText().equals("") || textEntrada.getText().equals("") || 
+				textNumPal.getText().equals("") ||	textSalida.getText().equals("")) {
+			
+			JOptionPane.showMessageDialog(null,"Error, parametros incompletos.");
+			
+		}
+		
+		else { 
+		
+			StringTokenizer st = new StringTokenizer(textDic.getText());
+			
+			while (st.hasMoreTokens()) {
+				
+				diccionario.insertar(st.nextToken());
+				
+			}
+
+			Transformacion transformacion = new Transformacion(diccionario);
+			transformacion.generarCaminos(Integer.parseInt(textNumPal.getText())+1);
+			transformacion.obtenerCamino(textEntrada.getText(), textSalida.getText());
+			
+			if (transformacion.hayCamino() && 
+					transformacion.tamCamino()+1==(Integer.parseInt(textNumPal.getText()))) { 
+			
+			new VentanaResolver(textDic.getText(), textEntrada.getText(), textSalida.getText(),
+					Integer.parseInt(textNumPal.getText())).setVisible(true);
+		
+			}
+			
+			else {
+				
+				JOptionPane.showMessageDialog(null,"No se ha encontrado solucion.");
+				
+			}
+			
+		}
 		
 	}
 	
