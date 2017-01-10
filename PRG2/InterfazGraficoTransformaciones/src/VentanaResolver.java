@@ -2,9 +2,14 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -20,7 +25,7 @@ public class VentanaResolver extends JFrame {
 	int cantPalInter = 20;
 	int tamPalabras = 16;
 	
-	ArrayList<JTextField[]> arrayPalInter = new ArrayList<JTextField[]>();
+	ArrayList<JTextField[]> arrayPalInter;/* = new ArrayList<JTextField[]>();*/
 	
 	JPanel panel = new JPanel();
 	JPanel panelInfo = new JPanel();
@@ -42,7 +47,7 @@ public class VentanaResolver extends JFrame {
 	GridLayout glPanelInfo = new GridLayout(1,2, 20, 20);
 	GridLayout glBotones = new GridLayout(1, 3, 20, 20);
 	GridLayout glText = new GridLayout(5,1);
-	GridLayout glLestrasPalInter = new GridLayout(cantPalInter, tamPalabras);
+	GridLayout glLestrasPalInter;
 	
 	
 	JMenuBar menuBar = new JMenuBar();
@@ -68,7 +73,15 @@ public class VentanaResolver extends JFrame {
 	JScrollPane scrollTextDic = new JScrollPane(textDic);
 	JScrollPane scrollLetrasPalInter = new JScrollPane(panelLestraPalInter);
 	
-	public VentanaResolver () {
+	public VentanaResolver (String diccionario, String entrada, String salida, int cantPal) {
+		
+		textDic.setText(diccionario);
+		textEntrada.setText(entrada);
+		textSalida.setText(salida);
+		cantPalInter = cantPal;
+		tamPalabras = textEntrada.getText().length();
+		
+		glLestrasPalInter = crearGridLayout(cantPalInter, tamPalabras);
 		
 		textDic.setEditable(false);
 		textEntrada.setEditable(false);
@@ -141,6 +154,35 @@ public class VentanaResolver extends JFrame {
 		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		this.add(panel);
 		
+		botonCargar.addActionListener (new ActionListener ( )
+		{
+			public void actionPerformed (ActionEvent arg0) {
+			
+				try {
+					
+					abrirPasatiempos ();
+					
+					 tamPalabras = textEntrada.getText().length();
+				     glLestrasPalInter = crearGridLayout(cantPalInter, tamPalabras);
+				     panelLestraPalInter.setLayout(glLestrasPalInter);
+				     scrollLetrasPalInter.add(panelLestraPalInter);
+				     panelPalInter.removeAll();
+				     panelPalInter.add(labelPalInter, BorderLayout.NORTH);
+					 panelPalInter.add(scrollLetrasPalInter, BorderLayout.CENTER);
+					 insertarTextPalInter ();
+					 panelPalInter.updateUI();
+				     
+					 
+				     
+				} catch (IOException e) {
+					
+					e.printStackTrace();
+					
+				}
+				
+			}
+		});
+		
 	}
 	
 	public JTextField[] iniciarTextPalInter () {
@@ -149,32 +191,39 @@ public class VentanaResolver extends JFrame {
 		
 		for (int i=0; i<letrasPalInter.length; i++) {
 			
-			//letrasPalInter[i] = new JTextField(1);
 			letrasPalInter[i] = new LetraPalabraIntermedia();
+			
 		}
 		
 		return letrasPalInter;
 		
 	}
 	
-	public void generarTextPalInter () {
+	public ArrayList<JTextField[]> generarTextPalInter () {
+		
+		ArrayList<JTextField[]> arraylist = new ArrayList<JTextField[]>();
 		
 		for (int i=0; i<cantPalInter; i++) {
 			
-			arrayPalInter.add(iniciarTextPalInter ());
+			arraylist.add(iniciarTextPalInter ());
 			
 		}
+		
+		arrayPalInter = arraylist;
+		
+		return arraylist;
 		
 	}
 	
 	public void insertarTextPalInter () {
 		
+		panelLestraPalInter.removeAll();
 		iniciarTextPalInter ();
 		generarTextPalInter ();
 		
 		for (int i=0; i<tamPalabras; i++) {
 			
-			for (int j=0; j<arrayPalInter.size(); j++) {
+			for (int j=0; j<cantPalInter; j++) {
 				
 				panelLestraPalInter.add(arrayPalInter.get(j)[i]);
 				
@@ -182,6 +231,70 @@ public class VentanaResolver extends JFrame {
 			
 		}
 		
+		
+		
+	}
+	
+	public void setTextDiccionario(String texto) {
+		
+		textDic.setText(texto);
+		
+	}
+	
+	public void setTextPalEntrada (String texto) {
+		
+		textEntrada.setText(texto);
+		
+	}
+	
+	public void setTextPalSalida (String texto) {
+		
+		textSalida.setText(texto);
+		
+	}
+	
+	public GridLayout crearGridLayout(int filas, int columnas) {
+		
+		if (columnas < 1) {
+		
+			columnas = 16;
+			
+		}
+			
+		GridLayout gl = new GridLayout(filas, columnas);
+		
+		return gl;
+				
+	}
+	
+public void abrirPasatiempos () throws IOException {
+		
+		String cadena;
+		StringBuffer sb = new StringBuffer();
+		JFileChooser fc = new JFileChooser();
+		BufferedReader buffer = null;
+		fc.showOpenDialog(null);
+		FileReader fr;
+			
+		fr = new FileReader(fc.getSelectedFile());
+		buffer = new BufferedReader(fr);
+		
+		cadena = buffer.readLine();
+		StringTokenizer st = new StringTokenizer(cadena," ");
+    	textEntrada.setText(st.nextToken());
+    	textSalida.setText(st.nextToken());
+    	cantPalInter = Integer.parseInt(st.nextToken());
+				
+		while((cadena = buffer.readLine())!=null) {
+		    	
+		    sb.append(cadena);
+		    sb.append("\n");
+		    	 
+		}
+		    
+		textDic.setText(sb.toString());    
+	     buffer.close();
+	   
 	}
 	
 }

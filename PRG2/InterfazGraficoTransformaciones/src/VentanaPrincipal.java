@@ -1,7 +1,5 @@
 
 import java.awt.BorderLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -37,9 +35,6 @@ public class VentanaPrincipal extends JFrame{
 	BorderLayout blSalir = new BorderLayout();
 	
 	GridLayout gl = new GridLayout(3, 1);
-	
-	//GridBagLayout gbl = new GridBagLayout();
-	//GridBagConstraints gbc = new GridBagConstraints();
 	
 	public VentanaPrincipal(){
 	
@@ -80,31 +75,6 @@ public class VentanaPrincipal extends JFrame{
 		menu.addSeparator();
 		menu.add(menuSalir);
 		
-		/*
-		gbc.gridx = 0;
-		gbc.gridy = 0;
-		gbc.fill = GridBagConstraints.BOTH;
-		panel.add(barraMenu, gbc);
-		
-		gbc.gridx =0;
-		gbc.gridy = 1;
-		gbc.gridwidth = 1;
-		gbc.gridheight = 1;
-		gbc.weightx = 100;
-		gbc.weighty = 100;
-		gbc.fill = GridBagConstraints.BOTH;
-		panel.add(botonCrear, gbc);
-		
-		gbc.gridx = 0;
-		gbc.gridy = 2;
-		gbc.gridwidth = 1;
-		gbc.gridheight = 1;
-		gbc.weightx = 100;
-		gbc.weighty = 100;
-		gbc.fill = GridBagConstraints.BOTH;
-		panel.add(botonResolver, gbc);
-		*/
-		
 		this.setTitle("Transformaciones");
 		this.setBounds(0,0, 600, 400);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -122,7 +92,7 @@ public class VentanaPrincipal extends JFrame{
 		{
 			public void actionPerformed (ActionEvent arg0) {
 			
-				new VentanaResolver().setVisible(true);
+				new VentanaResolver("", "", "",0).setVisible(true);
 				
 			}
 		});

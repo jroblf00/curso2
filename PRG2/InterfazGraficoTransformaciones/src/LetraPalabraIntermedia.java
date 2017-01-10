@@ -7,6 +7,8 @@ public class LetraPalabraIntermedia extends JTextField{
 
 	public LetraPalabraIntermedia () {
 		
+		this.setHorizontalAlignment(JTextField.CENTER);
+		
 		this.addKeyListener(new KeyListener(){
 			 
 			public void keyTyped(KeyEvent e)

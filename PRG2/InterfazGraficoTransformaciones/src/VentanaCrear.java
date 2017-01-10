@@ -2,9 +2,13 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.StringTokenizer;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -13,6 +17,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -20,6 +25,8 @@ import javax.swing.JTextField;
 
 public class VentanaCrear extends JFrame {
 
+	int numeroPalabras;
+	
 	JPanel panel = new JPanel();
 	JMenuBar menuBar = new JMenuBar();
 	JMenu menuEdicion = new JMenu("Edicion");
@@ -41,7 +48,7 @@ public class VentanaCrear extends JFrame {
 	JLabel labelEntrada = new JLabel("Palabra inicial");
 	JLabel labelSalida = new JLabel("Palabra final");
 	JLabel labelDic = new JLabel("Diccionario");
-	JLabel labelNumPal = new JLabel("Nº palabras Intermedias");
+	JLabel labelNumPal = new JLabel("Numero de palabras Intermedias");
 	JTextField textNumPal = new JTextField();
 	JTextField textEntrada = new JTextField();
 	JTextField textSalida = new JTextField();
@@ -127,6 +134,80 @@ public class VentanaCrear extends JFrame {
 		
 		this.add(panel);
 		
+		botonResolver.addActionListener (new ActionListener ( )
+		{
+			public void actionPerformed (ActionEvent arg0) {
+			
+				
+				if (textDic.getText().equals("") || textEntrada.getText().equals("") || 
+						textNumPal.getText().equals("") ||	textSalida.getText().equals("")) {
+					
+					JOptionPane.showMessageDialog(null,"Error, parametros incompletos.");
+					
+				}
+				
+				else { 
+				
+					
+					new VentanaResolver(textDic.getText(), textEntrada.getText(), textSalida.getText(),
+							Integer.parseInt(textNumPal.getText())).setVisible(true);
+				
+				}
+					
+			}
+		});
+		
+		botonGuardarPas.addActionListener (new ActionListener ( )
+		{
+			public void actionPerformed (ActionEvent arg0) {
+			
+				try {
+					
+					guardarPasatiempos ();
+					
+				} catch (IOException e) {
+					
+					e.printStackTrace();
+					
+				}
+				
+			}
+		});
+		
+		botonAbrirPas.addActionListener (new ActionListener ( )
+		{
+			public void actionPerformed (ActionEvent arg0) {
+			
+				try {
+					
+					abrirPasatiempos ();
+					
+				} catch (IOException e) {
+					
+					e.printStackTrace();
+					
+				}
+				
+			}
+		});
+		
+		botonAbrirDic.addActionListener (new ActionListener ( )
+		{
+			public void actionPerformed (ActionEvent arg0) {
+			
+				try {
+					
+					abrirDiccionario();
+					
+				} catch (IOException e) {
+					
+					e.printStackTrace();
+					
+				}
+				
+			}
+		});
+		
 		menuCopiar.addActionListener (new ActionListener ( )
 		{
 			public void actionPerformed (ActionEvent arg0) {
@@ -138,29 +219,18 @@ public class VentanaCrear extends JFrame {
 			}
 		});
 		
-		botonResolver.addActionListener (new ActionListener ( )
-		{
-			public void actionPerformed (ActionEvent arg0) {
-			
-				new VentanaResolver().setVisible(true);
-				
-			}
-		});
-		
-		botonGuardarPas.addActionListener (new ActionListener ( )
-		{
-			public void actionPerformed (ActionEvent arg0) {
-			
-				guardarPasatiempos ();
-				
-			}
-		});
-		
 		menuGuardarDic.addActionListener (new ActionListener ( )
 		{
 			public void actionPerformed (ActionEvent arg0) {
 			
-				guardarPasatiempos ();
+				try {
+					
+					guardarPasatiempos ();
+					
+				} catch (IOException e) {
+					
+					e.printStackTrace();
+				}
 				
 			}
 		});
@@ -187,32 +257,108 @@ public class VentanaCrear extends JFrame {
 		
 	}
 	
-	public void guardarPasatiempos () {
+	public void guardarPasatiempos () throws IOException  {
 		
 		JFileChooser fc = new JFileChooser();
 		File file;
 		FileWriter fw;
 		StringBuffer buffer = new StringBuffer();
 		
-		buffer.append(textDic.getText());
+		buffer.append(textEntrada.getText() + " " + textSalida.getText() + " " + textNumPal.getText());
 		buffer.append("\n");
-		buffer.append(textEntrada.getText() + " " + textSalida.getText());
-		
-		try
-		{
+		buffer.append(textDic.getText());
 
-			fc.showDialog (null, "guardar como");
-			file=fc.getSelectedFile ();
-			fw = new FileWriter(file);
-			fw.write(buffer.toString());
-			fw.close();
-							
-		}
-		catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		fc.showDialog (null, "guardar como");
+		file=fc.getSelectedFile ();
+		fw = new FileWriter(file);
+		fw.write(buffer.toString());
+		fw.close();
 		
 	}
+	
+	public void abrirPasatiempos () throws IOException {
+		
+		String cadena;
+		StringBuffer sb = new StringBuffer();
+		JFileChooser fc = new JFileChooser();
+		BufferedReader buffer = null;
+		fc.showOpenDialog(null);
+		FileReader fr;
+			
+		fr = new FileReader(fc.getSelectedFile());
+		buffer = new BufferedReader(fr);
+		
+		cadena = buffer.readLine();
+		StringTokenizer st = new StringTokenizer(cadena," ");
+    	textEntrada.setText(st.nextToken());
+    	textSalida.setText(st.nextToken());
+    	textNumPal.setText(st.nextToken());
+				
+		while((cadena = buffer.readLine())!=null) {
+		    	
+		    sb.append(cadena);
+		    sb.append("\n");
+		    	 
+		}
+		    
+		textDic.setText(sb.toString());    
+	     buffer.close();
+		
+	}
+	
+	public void abrirDiccionario () throws IOException {
+		
+		String cadena;
+		StringBuffer sb = new StringBuffer();
+		JFileChooser fc = new JFileChooser();
+		BufferedReader buffer = null;
+		fc.showOpenDialog(null);
+		FileReader fr;
+			
+		fr = new FileReader(fc.getSelectedFile());
+		buffer = new BufferedReader(fr);
+		
+		
+				
+		while((cadena = buffer.readLine())!=null) {
+			
+			if (cadena.contains(" ")) {
+				
+				cadena = buffer.readLine();
+				
+			}
+			
+			else {
+		    	
+				sb.append(cadena);
+				sb.append("\n");
+		    	 
+			}
+			
+		}
+		    
+		textDic.setText(sb.toString());    
+	     buffer.close();
+		
+	}
+	
+	public void guardarDiccionario () throws IOException {
+		
+		JFileChooser fc = new JFileChooser();
+		File file;
+		FileWriter fw;
+		StringBuffer buffer = new StringBuffer();
+
+		buffer.append(textDic.getText());
+
+		fc.showDialog (null, "guardar como");
+		file=fc.getSelectedFile ();
+		fw = new FileWriter(file);
+		fw.write(buffer.toString());
+		fw.close();
+		
+	}
+	
+	
 	
 }
