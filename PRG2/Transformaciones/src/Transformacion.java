@@ -189,7 +189,7 @@ public class Transformacion {
 		
 		if (this.camino == null) {
 			
-			imprimir.append("Sin solución.");
+			imprimir.append("Sin solución.\n");
 		}
 		
 		else {
@@ -200,8 +200,8 @@ public class Transformacion {
 				
 			}
 			
-		}
-				
+		} 
+		
 		return imprimir.toString();
 		
 	}

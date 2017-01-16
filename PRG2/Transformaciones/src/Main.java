@@ -55,20 +55,24 @@ public class Main {
 				transformacion.generarCaminos();
 				transformacion.obtenerCamino(diccionario.buscarPosicion(palabrasATransformar.get(i)),
 						diccionario.buscarPosicion(palabrasATransformar.get(i+1)));
-				System.out.println(transformacion.imprimirCamino());
+				System.out.print(transformacion.imprimirCamino());
 		
+				if (i < palabrasATransformar.size()-2) {
+					
+					System.out.println();
+					
+				}
+				
 			}
 			
 			else {
 				
 				System.out.println("Sin solución.");
-				System.out.println();
 				
 			}
 		
 		}
 		
-		System.out.println();
 	}
 
 }
