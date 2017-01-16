@@ -38,7 +38,6 @@ public class Transformacion {
 		this.caminos = new int[this.tamMatriz][this.tamMatriz];
 		this.diccionario = diccionario;
 		
-		generarAdyacencia();
 	}
 	
 	/**
@@ -115,6 +114,8 @@ public class Transformacion {
 	 * con la ruta que se debe de seguir (caminos)
 	 */
 	public void generarCaminos () {
+		
+		generarAdyacencia();
 		
 		for (int i=0; i<this.tamMatriz; i++) {
 			

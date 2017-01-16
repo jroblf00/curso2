@@ -10,12 +10,13 @@ public class Main {
 
 	public static void main(String[] args) {
 		
-		/*
-		Scanner sc = new Scanner(System.in);		
+		Transformacion transformacion;
 		Diccionario diccionario = new Diccionario();
+		
+		Scanner sc = new Scanner(System.in);		
+		ArrayList<String> palabrasATransformar = new ArrayList<String>();
 		String buffer;
-		String inicio;
-		String fin;
+
 		
 		do{
 			
@@ -26,44 +27,48 @@ public class Main {
 		
 		}while(buffer.compareTo("") != 0);
 		
-		buffer = sc.nextLine();
-		StringTokenizer st = new StringTokenizer(buffer," ");
-		inicio = st.nextToken();
-		fin = st.nextToken();
+		while (sc.hasNextLine()) {
+		
+			buffer = sc.nextLine();
+			
+			if (buffer.isEmpty()) {
+				
+				break;
+				
+			}
+			
+			StringTokenizer st = new StringTokenizer(buffer," ");
+			palabrasATransformar.add(st.nextToken());
+			palabrasATransformar.add(st.nextToken());
+			
+		}
 		
 		sc.close();
 		
-		diccionario.ordenar();
+		transformacion = new Transformacion(diccionario);
 		
-		Transformacion transformacion = new Transformacion(diccionario);
-		transformacion.generarCaminos();
-		transformacion.obtenerCamino(diccionario.BuscarPosicion(inicio), diccionario.BuscarPosicion(fin));
-		System.out.println(transformacion.imprimirCamino());
-		//transformacion.CalcularLongitudMinina();
-		//transformacion.CalcularLongitudMinina();
-		//transformacion.imprimir();
-		//System.out.println(diccionario.toString());
-		//System.out.println(transformacion.MostrarCamino(inicio, fin));
-		*/
+		for (int i=0; i<palabrasATransformar.size(); i+=2) {
 		
-		ArrayList<String> palabras = new ArrayList<String>();
-		palabras.add("casa");
-		palabras.add("lasa");
-		palabras.add("pasa");
-		palabras.add("masa");
-		palabras.add("abrasa");
-		palabras.add("paso");
-		palabras.add("bueñue");
-		palabras.add("poco");
-		palabras.add("pozo");
-		palabras.add("postal");
-		palabras.add("paco");
+			if (diccionario.existePalabra(palabrasATransformar.get(i)) &&
+					diccionario.existePalabra(palabrasATransformar.get(i+1))) {
+			
+				transformacion.generarCaminos();
+				transformacion.obtenerCamino(diccionario.buscarPosicion(palabrasATransformar.get(i)),
+						diccionario.buscarPosicion(palabrasATransformar.get(i+1)));
+				System.out.println(transformacion.imprimirCamino());
 		
-		Diccionario diccionario = new Diccionario(palabras);
-		Transformacion tf = new Transformacion(diccionario);
-		tf.generarCaminos();
-		tf.obtenerCamino(palabras.indexOf("casa"), palabras.indexOf("caso"));
-		System.out.println(tf.imprimirCamino());
+			}
+			
+			else {
+				
+				System.out.println("Sin solución.");
+				System.out.println();
+				
+			}
+		
+		}
+		
+		System.out.println();
 	}
 
 }

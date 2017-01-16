@@ -71,9 +71,15 @@ public class Diccionario {
 		
 	}
 	
-	public int BuscarPosicion (String palabra) {
+	public int buscarPosicion (String palabra) {
 		
 		return this.diccionario.indexOf(palabra);
+		
+	}
+	
+	public boolean existePalabra (String palabra) {
+		
+		return this.diccionario.contains(palabra);
 		
 	}
 	
